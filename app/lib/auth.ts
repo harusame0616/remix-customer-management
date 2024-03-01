@@ -7,3 +7,7 @@ type LoginPayload = {
 export async function login(payload: LoginPayload) {
   return { success: !true };
 }
+
+export async function isLoggedIn() {
+  return true;
+}
