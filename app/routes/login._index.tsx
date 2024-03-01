@@ -74,9 +74,9 @@ export default function Index() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="flex items-center flex-col">
+    <div className="flex items-center flex-col mx-8">
       <section
-        className="mt-40 max-w-md w-full"
+        className="mt-[10%] max-w-md w-full"
         aria-labelledby="login-section-text"
       >
         <h1
@@ -183,7 +183,7 @@ function DemoDescription() {
             <span>
               ご自由にお試しいただけますが、誰でも閲覧・操作できるため実在するデータを入力するのはご遠慮ください。
             </span>
-            <span>データは毎日リセットされますので、ご了承ください。</span>
+            <span>データは毎日リセットされます、ご了承ください</span>
           </p>
         </div>
         <div>
