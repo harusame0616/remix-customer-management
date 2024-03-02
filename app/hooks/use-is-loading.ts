@@ -1,6 +1,6 @@
 import { useNavigation } from "@remix-run/react";
 
-export function useIsLoading() {
+export function useIsSubmitting() {
   const navigation = useNavigation();
-  return !!navigation.location;
+  return navigation.state === "submitting";
 }

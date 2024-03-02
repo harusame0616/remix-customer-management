@@ -5,6 +5,7 @@ type LoginPayload = {
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function login(payload: LoginPayload) {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   return {
     success:
       [

@@ -9,6 +9,8 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Switch } from "./ui/switch";
+import { useId, useState } from "react";
 
 type FormInputProps<Schema extends FieldValues> = {
   control: UseFormReturn<Schema>["control"];
@@ -23,8 +25,11 @@ export function FormInput<Schema extends FieldValues>({
   name,
   required = false,
   description,
+  type,
   ...props
 }: FormInputProps<Schema>) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
   return (
     <FormField
       control={control}
@@ -45,9 +50,19 @@ export function FormInput<Schema extends FieldValues>({
             <FormDescription>{description}</FormDescription>
           </div>
           <FormControl>
-            <Input {...field} {...props} />
+            <Input
+              {...field}
+              {...props}
+              type={isPasswordVisible ? "text" : type}
+            />
           </FormControl>
           <FormMessage />
+          {type === "password" && (
+            <PasswordVisibleSwitch
+              visible={isPasswordVisible}
+              onChange={setIsPasswordVisible}
+            />
+          )}
         </FormItem>
       )}
     />
@@ -96,5 +111,23 @@ export function FormRadio<Schema extends FieldValues>({
         </FormItem>
       )}
     />
+  );
+}
+
+type PasswordVisibleSwitchProps = {
+  visible: boolean;
+  onChange: (visible: boolean) => void;
+};
+function PasswordVisibleSwitch({
+  visible,
+  onChange,
+}: PasswordVisibleSwitchProps) {
+  const id = useId();
+
+  return (
+    <div className="mt-1 flex items-center gap-2">
+      <Switch checked={visible} onCheckedChange={onChange} id={id} />
+      <FormLabel htmlFor={id}>パスワードを表示する</FormLabel>
+    </div>
   );
 }

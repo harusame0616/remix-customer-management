@@ -1,18 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ActionFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
-import { Form, Link, json, useActionData, useSubmit } from "@remix-run/react";
+import {
+  Link,
+  json,
+  useActionData,
+  useSubmit,
+  Form as RemixForm,
+} from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { ErrorMessage } from "~/components/error-message";
-import { InputWithLabel } from "~/components/input-with-label";
+import { FormInput } from "~/components/form-input";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import { Form as ShadcnForm } from "~/components/ui/form";
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
 } from "~/domains/auth-user/constants";
-import { useIsLoading } from "~/hooks/use-is-loading";
+import { useIsSubmitting } from "~/hooks/use-is-loading";
 import { login } from "~/lib/auth";
 
 export const meta: MetaFunction = () => {
@@ -70,7 +77,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
-  const isLoading = useIsLoading();
+  const isSubmitting = useIsSubmitting();
   const actionData = useActionData<typeof action>();
 
   return (
@@ -86,78 +93,73 @@ export default function Index() {
           顧客管理システム
         </h1>
         <h2 className="text-center mb-1">ログイン</h2>
-        <ErrorMessage message={isLoading ? "" : actionData?.message} />
-        <LoginForm isLoading={isLoading} />
+        <ErrorMessage message={isSubmitting ? "" : actionData?.message} />
+        <LoginForm isSubmitting={isSubmitting} />
       </section>
       <DemoDescription />
     </div>
   );
 }
 
-function LoginForm({ isLoading }: { isLoading: boolean }) {
+function LoginForm({ isSubmitting }: { isSubmitting: boolean }) {
   const submit = useSubmit();
-  const form = useForm({
+  const form = useForm<z.input<typeof loginParamSchema>>({
     defaultValues: {
       email: "admin@example.com",
-
       password: "password",
     },
     resolver: zodResolver(loginParamSchema),
   });
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    if (isLoading) return;
+    if (isSubmitting) return;
 
     submit(data, { method: "POST", encType: "application/json" });
   });
 
   return (
     <Card className="p-8">
-      <Form
-        method="POST"
-        onSubmit={handleSubmit}
-        noValidate
-        className="flex flex-col gap-4"
-      >
-        <InputWithLabel
-          type="email"
-          label="メールアドレス"
-          autoComplete="email"
-          aria-invalid={!!form.formState.errors.email}
-          {...form.register("email")}
-          error={isLoading ? "" : form.formState.errors.email?.message}
-          selectList={[
-            "admin@example.com",
-            "editor@example.com",
-            "viewer@example.com",
-          ]}
-        />
-        <InputWithLabel
-          type="password"
-          label="パスワード"
-          autoComplete="current-password"
-          aria-invalid={!!form.formState.errors.email}
-          error={isLoading ? "" : form.formState.errors.password?.message}
-          {...form.register("password")}
-        />
-        <Button
-          aria-disabled={isLoading}
-          className="aria-disabled:opacity-50 aria-disabled:pointer-event-none aria-disabled:cursor-default"
+      <ShadcnForm {...form}>
+        <RemixForm
+          onSubmit={handleSubmit}
+          noValidate
+          className="flex flex-col gap-4"
         >
-          {isLoading ? (
-            <>
-              <span className="mr-2">ログイン中です</span>
-              <ReloadIcon
-                className="animate-spin motion-reduce:hidden"
-                aria-hidden
-              />
-            </>
-          ) : (
-            "ログイン"
-          )}
-        </Button>
-        <Link to="/password-reset">パスワードのリセット</Link>
-      </Form>
+          <FormInput
+            control={form.control}
+            label="メールアドレス"
+            type="email"
+            autoComplete="email"
+            name="email"
+            required
+          />
+          <FormInput
+            control={form.control}
+            label="パスワード"
+            type="password"
+            autoComplete="current-password"
+            name="password"
+            required
+          />
+          <Button
+            aria-disabled={isSubmitting}
+            className="aria-disabled:opacity-50 aria-disabled:pointer-event-none aria-disabled:cursor-default"
+          >
+            {isSubmitting ? (
+              <>
+                <span className="mr-2">ログイン中です</span>
+                <ReloadIcon
+                  className="animate-spin motion-reduce:hidden"
+                  aria-hidden
+                />
+              </>
+            ) : (
+              "ログイン"
+            )}
+          </Button>
+          <Link to="/password-reset">パスワードのリセット</Link>
+        </RemixForm>
+      </ShadcnForm>
     </Card>
   );
 }
