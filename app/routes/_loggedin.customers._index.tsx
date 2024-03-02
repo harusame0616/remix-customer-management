@@ -1,13 +1,203 @@
-import type { MetaFunction } from "@remix-run/node";
+import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import { defer, type MetaFunction } from "@remix-run/node";
+import { Await, Link, useLoaderData, useNavigation } from "@remix-run/react";
+import { Suspense } from "react";
+import { Button } from "~/components/ui/button";
+import {
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  Pagination as ShadCNPagination,
+} from "~/components/ui/pagination";
+import { Separator } from "~/components/ui/separator";
+import { Skeleton } from "~/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import { customersFixture } from "~/fixtures/customers";
+import { useSort } from "~/hooks/use-sort";
+import { SortOrder } from "~/lib/table";
 
 export const meta: MetaFunction = () => {
   return [{ title: "顧客一覧 - 顧客管理システム" }];
 };
 
+export const loader = async () => {
+  const customers = customersFixture
+    .slice(0, 24)
+    .map((customer) => ({ ...customer, note: "" }));
+  return defer({
+    customers: new Promise<typeof customers>((r) =>
+      setTimeout(() => r(customers), 200)
+    ),
+  });
+};
+
 export default function Index() {
+  const loadData = useLoaderData<typeof loader>();
+
+  const navigation = useNavigation();
+  const { sortKey, sortOrder } = useSort();
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>顧客一覧</h1>
+    <div className="flex flex-col h-full">
+      <div className="p-2 md:px-4 flex">
+        <h1>顧客一覧</h1>
+        <div className="flex-grow flex justify-end">
+          <Link to="/customers/new">新規登録</Link>
+        </div>
+      </div>
+      <Separator />
+      <div className="flex flex-col flex-grow overflow-hidden">
+        {navigation.location ? (
+          <CustomerTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
+        ) : (
+          <Suspense
+            fallback={
+              <CustomerTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
+            }
+          >
+            <Await resolve={loadData.customers}>
+              {(resolvedValue) => (
+                <CustomerTable
+                  customers={resolvedValue}
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                />
+              )}
+            </Await>
+          </Suspense>
+        )}
+      </div>
+      <Separator />
+      <Pagination />
     </div>
+  );
+}
+
+type Customer = {
+  fullName: string;
+  fullNameKana: string;
+  age: number;
+  birthday: string;
+  sex: string;
+  blood: string;
+  email: string;
+  phoneNumber: string;
+  mobilePhoneNumber: string;
+  postNumber: string;
+  address: string;
+  company: string;
+  note: string;
+};
+
+const headers = [
+  { sortKey: "fullName", label: "名前" },
+  { sortKey: "address", label: "住所" },
+  { sortKey: "phoneNumber", label: "電話番号" },
+  { sortKey: "email", label: "メール" },
+  { sortKey: "note", label: "備考" },
+];
+type CustomerTableProps = {
+  skeleton?: false;
+  customers: Customer[];
+  sortKey: string;
+  sortOrder: SortOrder;
+};
+type CustomerTableSkeletonProps = {
+  skeleton: true;
+  sortKey: string;
+  sortOrder: SortOrder;
+};
+function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
+  const customers = props.skeleton
+    ? Array.from({ length: 10 }).map(() => {
+        return {
+          fullName: <Skeleton className="h-4 w-20" />,
+          address: <Skeleton className="h-4 w-40" />,
+          phoneNumber: <Skeleton className="h-4 w-20" />,
+          email: <Skeleton className="h-4 w-32" />,
+          note: <Skeleton className="h-4 w-4" />,
+        };
+      })
+    : props.customers;
+  return (
+    <Table className="overflow-auto min-w-[640px]">
+      <TableHeader className="sticky top-0 bg-background drop-shadow-sm ">
+        <TableRow>
+          {headers.map(({ sortKey, label }) => (
+            <HeaderItem key={sortKey} sortKey={sortKey} label={label} />
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {customers.map((customer, index) => (
+          <TableRow key={index}>
+            <TableCell>{customer.fullName}</TableCell>
+            <TableCell>{customer.address}</TableCell>
+            <TableCell>{customer.phoneNumber}</TableCell>
+            <TableCell>{customer.email}</TableCell>
+            <TableCell>{customer.note}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+type HeaderItemProps = {
+  sortKey: string;
+  label: string;
+};
+function HeaderItem({ sortKey, label }: HeaderItemProps) {
+  const { changeSort, sortOrder, sortKey: currentSortKey } = useSort();
+  return (
+    <TableHead>
+      <Button
+        onClick={() => changeSort(sortKey)}
+        variant="ghost"
+        className="w-full text-left p-0 flex justify-start font-bold"
+      >
+        <span className="mr-2">{label}</span>
+        {currentSortKey === sortKey && <SortIcon sort={sortOrder} />}
+      </Button>
+    </TableHead>
+  );
+}
+
+function SortIcon({ sort }: { sort: SortOrder }) {
+  return sort === SortOrder.Asc ? (
+    <ChevronDownIcon className="降順" />
+  ) : (
+    <ChevronUpIcon className="昇順" />
+  );
+}
+
+function Pagination() {
+  return (
+    <ShadCNPagination className="py-1">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious href="#" />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">1</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext href="#" />
+        </PaginationItem>
+      </PaginationContent>
+    </ShadCNPagination>
   );
 }

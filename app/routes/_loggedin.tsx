@@ -30,11 +30,9 @@ export default function LoggedInLayout() {
         </div>
       </header>
       <Separator />
-      <div className="grow overflow-hidden">
-        <main className="p-4 h-full overflow-y-scroll">
-          <Outlet />
-        </main>
-      </div>
+      <main className="grow overflow-auto">
+        <Outlet />
+      </main>
     </>
   );
 }
