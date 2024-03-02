@@ -3,7 +3,7 @@ import { redirect, type MetaFunction } from "@remix-run/node";
 import { useSubmit } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { Button } from "~/components/ui/button";
+import { ActionCard } from "~/components/action-card";
 import { Form } from "~/components/ui/form";
 import { Separator } from "~/components/ui/separator";
 import { FormInput, FormRadio } from "../components/form-input";
@@ -14,6 +14,7 @@ export const meta: MetaFunction = () => {
 
 export const action = async () => {
   // TODO: not implement
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   const id = crypto.randomUUID();
   return redirect(`/customers/${id}`);
 };
@@ -91,88 +92,91 @@ export default function CustomerNew() {
             onSubmit={handleSubmit}
             className="max-w-2xl w-full space-y-4"
           >
-            <FormInput
-              control={form.control}
-              label="顧客コード"
-              description="32文字以内"
-              name="customerCode"
-              className="w-28"
-            />
-            <Separator />
-            <FormInput
-              control={form.control}
-              description="12文字以内"
-              label="名前"
-              name="fullName"
-              className="w-28"
-            />
-            <FormInput
-              control={form.control}
-              label="名前（かな）"
-              description="32文字以内"
-              name="fullNameKana"
-              className="w-48"
-            />
-            <FormRadio
-              control={form.control}
-              selects={[
-                { label: "男性", value: "man" },
-                { label: "女性", value: "woman" },
-                { label: "その他", value: "unknown" },
-              ]}
-              label="性別"
-              name="sex"
-              className="w-28"
-            />
-            <FormInput
-              control={form.control}
-              label="誕生日"
-              name="birthday"
-              type="date"
-              className="w-32"
-              max="9999-12-31"
-            />
+            <ActionCard
+              actionLabel="登録する"
+              processingActonLabel="登録中です"
+            >
+              <FormInput
+                control={form.control}
+                label="顧客コード"
+                description="32文字以内"
+                name="customerCode"
+                className="w-28"
+              />
+              <Separator />
+              <FormInput
+                control={form.control}
+                description="12文字以内"
+                label="名前"
+                name="fullName"
+                className="w-28"
+              />
+              <FormInput
+                control={form.control}
+                label="名前（かな）"
+                description="32文字以内"
+                name="fullNameKana"
+                className="w-48"
+              />
+              <FormRadio
+                control={form.control}
+                selects={[
+                  { label: "男性", value: "man" },
+                  { label: "女性", value: "woman" },
+                  { label: "その他", value: "unknown" },
+                ]}
+                label="性別"
+                name="sex"
+                className="w-28"
+              />
+              <FormInput
+                control={form.control}
+                label="誕生日"
+                name="birthday"
+                type="date"
+                className="w-32"
+                max="9999-12-31"
+              />
 
-            <Separator />
+              <Separator />
 
-            <FormInput
-              control={form.control}
-              label="メールアドレス"
-              description="255文字以内"
-              name="emails"
-              className="w-80"
-            />
-            <FormInput
-              control={form.control}
-              description="ハイフンは自動で削除します。ハイフンを除いて9文字以上11文字以内"
-              label="電話番号"
-              name="phoneNumber"
-              className="w-40"
-            />
-            <FormInput
-              control={form.control}
-              description="ハイフンは自動で削除します。ハイフンを除いて9文字以上11文字以内"
-              label="携帯電話番号"
-              name="mobilePhoneNumber"
-              className="w-40"
-            />
+              <FormInput
+                control={form.control}
+                label="メールアドレス"
+                description="255文字以内"
+                name="emails"
+                className="w-80"
+              />
+              <FormInput
+                control={form.control}
+                description="ハイフンは自動で削除します。ハイフンを除いて9文字以上11文字以内"
+                label="電話番号"
+                name="phoneNumber"
+                className="w-40"
+              />
+              <FormInput
+                control={form.control}
+                description="ハイフンは自動で削除します。ハイフンを除いて9文字以上11文字以内"
+                label="携帯電話番号"
+                name="mobilePhoneNumber"
+                className="w-40"
+              />
 
-            <Separator />
+              <Separator />
 
-            <FormInput
-              control={form.control}
-              label="郵便番号"
-              name="postNumber"
-              className="w-24"
-            />
-            <FormInput
-              control={form.control}
-              label="住所"
-              name="address"
-              className="w-80"
-            />
-            <Separator />
-            <Button>登録する</Button>
+              <FormInput
+                control={form.control}
+                label="郵便番号"
+                name="postNumber"
+                className="w-24"
+              />
+              <FormInput
+                control={form.control}
+                label="住所"
+                name="address"
+                className="w-80"
+              />
+            </ActionCard>
           </form>
         </Form>
       </div>
