@@ -1,13 +1,12 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
-import { defer, type MetaFunction } from "@remix-run/node";
+import { LoaderFunctionArgs, defer, type MetaFunction } from "@remix-run/node";
 import { Await, Link, useLoaderData, useNavigation } from "@remix-run/react";
 import { Suspense } from "react";
 import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import {
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
   Pagination as ShadCNPagination,
@@ -23,20 +22,29 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { customersFixture } from "~/fixtures/customers";
+import { usePagination } from "~/hooks/use-pagination";
 import { useSort } from "~/hooks/use-sort";
+import { PER_PAGE, toPage } from "~/lib/pagination";
 import { SortOrder } from "~/lib/table";
 
 export const meta: MetaFunction = () => {
   return [{ title: "顧客一覧 - 顧客管理システム" }];
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const page = Number(new URL(request.url).searchParams.get("page"));
+
+  const offset = (page - 1) * PER_PAGE;
   const customers = customersFixture
-    .slice(0, 24)
+    .slice(offset, offset + PER_PAGE)
     .map((customer) => ({ ...customer, note: "" }));
+
   return defer({
     customers: new Promise<typeof customers>((r) =>
-      setTimeout(() => r(customers), 200)
+      setTimeout(() => r(customers), 1000)
+    ),
+    totalCount: new Promise<number>((r) =>
+      setTimeout(() => r(customersFixture.length), 200)
     ),
   });
 };
@@ -78,7 +86,11 @@ export default function Index() {
         )}
       </div>
       <Separator />
-      <Pagination />
+      <Suspense>
+        <Await resolve={loadData.totalCount}>
+          {(totalCount) => <Pagination totalCount={totalCount} />}
+        </Await>
+      </Suspense>
     </div>
   );
 }
@@ -181,23 +193,51 @@ function SortIcon({ sort }: { sort: SortOrder }) {
   );
 }
 
-function Pagination() {
+type PaginationProps = { totalCount: number };
+function Pagination({ totalCount }: PaginationProps) {
+  const { currentPage, nextUrl, goToPage, prevUrl, totalPage } =
+    usePagination(totalCount);
+
   return (
-    <ShadCNPagination className="py-1">
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious href="#" />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext href="#" />
-        </PaginationItem>
-      </PaginationContent>
-    </ShadCNPagination>
+    <div className="flex justify-end gap-8 px-8">
+      <div>
+        <ShadCNPagination className="py-1">
+          <PaginationContent className="flex">
+            {prevUrl && (
+              <PaginationItem>
+                <PaginationPrevious to={prevUrl} />
+              </PaginationItem>
+            )}
+            {nextUrl && (
+              <PaginationItem>
+                <PaginationNext to={nextUrl} />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </ShadCNPagination>
+      </div>
+      <div className="flex items-center">全 {totalPage}ページ</div>
+      <form
+        className="flex items-center gap-2"
+        method="GET"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const page = new FormData(e.target as HTMLFormElement).get("page");
+          goToPage(toPage(page));
+        }}
+      >
+        <Input
+          defaultValue={currentPage}
+          type="number"
+          name="page"
+          min={1}
+          required
+          max={totalPage}
+          className="w-24"
+        />
+        ページ目へ
+        <Button variant="outline">移動</Button>
+      </form>
+    </div>
   );
 }
