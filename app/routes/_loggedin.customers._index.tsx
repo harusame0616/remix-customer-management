@@ -39,7 +39,7 @@ function isCustomerKey(
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
-  const page = Number(url.searchParams.get("page"));
+  const page = toPage(url.searchParams.get("page"));
   const sortKey = url.searchParams.get("sortKey") ?? "fullName";
   const sortOrder = toSortOrder(url.searchParams.get("sortOrder"));
 
@@ -62,6 +62,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     .slice(offset, offset + PER_PAGE)
     .map((customer) => ({ ...customer, note: "" }));
 
+  console.log(customers);
+
   return defer({
     customers: new Promise<typeof customers>((r) =>
       setTimeout(() => r(customers), 1000)
@@ -77,6 +79,8 @@ export default function Index() {
 
   const navigation = useNavigation();
   const { sortKey, sortOrder } = useSort();
+
+  console.log(loadData);
 
   return (
     <div className="flex flex-col h-full">
