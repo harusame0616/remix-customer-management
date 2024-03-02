@@ -101,7 +101,7 @@ export default function CustomerNew() {
                 label="顧客コード"
                 description="32文字以内"
                 name="customerCode"
-                className="w-28"
+                className="max-w-28"
               />
               <Separator />
               <FormInput
@@ -109,14 +109,14 @@ export default function CustomerNew() {
                 description="12文字以内"
                 label="名前"
                 name="fullName"
-                className="w-28"
+                className="max-w-28"
               />
               <FormInput
                 control={form.control}
                 label="名前（かな）"
                 description="32文字以内"
                 name="fullNameKana"
-                className="w-48"
+                className="max-w-48"
               />
               <FormRadio
                 control={form.control}
@@ -127,14 +127,14 @@ export default function CustomerNew() {
                 ]}
                 label="性別"
                 name="sex"
-                className="w-28"
+                className="max-w-28"
               />
               <FormInput
                 control={form.control}
                 label="誕生日"
                 name="birthday"
                 type="date"
-                className="w-32"
+                className="max-w-32"
                 max="9999-12-31"
               />
 
@@ -145,21 +145,21 @@ export default function CustomerNew() {
                 label="メールアドレス"
                 description="255文字以内"
                 name="emails"
-                className="w-80"
+                className="max-w-80"
               />
               <FormInput
                 control={form.control}
                 description="ハイフンは自動で削除します。ハイフンを除いて9文字以上11文字以内"
                 label="電話番号"
                 name="phoneNumber"
-                className="w-40"
+                className="max-w-40"
               />
               <FormInput
                 control={form.control}
                 description="ハイフンは自動で削除します。ハイフンを除いて9文字以上11文字以内"
                 label="携帯電話番号"
                 name="mobilePhoneNumber"
-                className="w-40"
+                className="max-w-40"
               />
 
               <Separator />
@@ -168,13 +168,13 @@ export default function CustomerNew() {
                 control={form.control}
                 label="郵便番号"
                 name="postNumber"
-                className="w-24"
+                className="max-w-24"
               />
               <FormInput
                 control={form.control}
                 label="住所"
                 name="address"
-                className="w-80"
+                className="max-w-80"
               />
             </ActionCard>
           </form>
