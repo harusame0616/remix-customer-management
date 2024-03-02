@@ -1,19 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { ActionFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
 import {
   Link,
+  Form as RemixForm,
   json,
   useActionData,
   useSubmit,
-  Form as RemixForm,
 } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { ActionCard } from "~/components/action-card";
 import { ErrorMessage } from "~/components/error-message";
 import { FormInput } from "~/components/form-input";
-import { Button } from "~/components/ui/button";
-import { Card } from "~/components/ui/card";
 import { Form as ShadcnForm } from "~/components/ui/form";
 import {
   PASSWORD_MAX_LENGTH,
@@ -118,12 +116,11 @@ function LoginForm({ isSubmitting }: { isSubmitting: boolean }) {
   });
 
   return (
-    <Card className="p-8">
-      <ShadcnForm {...form}>
-        <RemixForm
-          onSubmit={handleSubmit}
-          noValidate
-          className="flex flex-col gap-4"
+    <ShadcnForm {...form}>
+      <RemixForm onSubmit={handleSubmit} noValidate>
+        <ActionCard
+          actionLabel="ログイン"
+          processingActonLabel="ログイン中です"
         >
           <FormInput
             control={form.control}
@@ -141,26 +138,14 @@ function LoginForm({ isSubmitting }: { isSubmitting: boolean }) {
             name="password"
             required
           />
-          <Button
-            aria-disabled={isSubmitting}
-            className="aria-disabled:opacity-50 aria-disabled:pointer-event-none aria-disabled:cursor-default"
-          >
-            {isSubmitting ? (
-              <>
-                <span className="mr-2">ログイン中です</span>
-                <ReloadIcon
-                  className="animate-spin motion-reduce:hidden"
-                  aria-hidden
-                />
-              </>
-            ) : (
-              "ログイン"
-            )}
-          </Button>
-          <Link to="/password-reset">パスワードのリセット</Link>
-        </RemixForm>
-      </ShadcnForm>
-    </Card>
+        </ActionCard>
+        <div className="mt-2 text-center">
+          <Link to="/password-reset" className="mt-4">
+            パスワードのリセット
+          </Link>
+        </div>
+      </RemixForm>
+    </ShadcnForm>
   );
 }
 

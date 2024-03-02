@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { ActionFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
 import {
   Form as RemixForm,
@@ -9,10 +8,9 @@ import {
 } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { ActionCard } from "~/components/action-card";
 import { ErrorMessage } from "~/components/error-message";
 import { FormInput } from "~/components/form-input";
-import { Button } from "~/components/ui/button";
-import { Card } from "~/components/ui/card";
 import { Form } from "~/components/ui/form";
 import { useIsSubmitting } from "~/hooks/use-is-loading";
 import { resetPassword } from "~/lib/auth";
@@ -104,13 +102,16 @@ function PasswordResetForm({ isSubmitting }: { isSubmitting: boolean }) {
   });
 
   return (
-    <Card className="p-8">
-      <Form {...form}>
-        <RemixForm
-          method="POST"
-          onSubmit={handleSubmit}
-          noValidate
-          className="flex flex-col gap-4"
+    <Form {...form}>
+      <RemixForm
+        method="POST"
+        onSubmit={handleSubmit}
+        noValidate
+        className="flex flex-col gap-4"
+      >
+        <ActionCard
+          actionLabel="パスワードリセット URL を送信する"
+          processingActonLabel="パスワードリセット URL を送信する"
         >
           <FormInput
             control={form.control}
@@ -120,24 +121,8 @@ function PasswordResetForm({ isSubmitting }: { isSubmitting: boolean }) {
             autoComplete="email"
             required
           />
-          <Button
-            aria-disabled={isSubmitting}
-            className="aria-disabled:opacity-50 aria-disabled:pointer-event-none aria-disabled:cursor-default"
-          >
-            {isSubmitting ? (
-              <>
-                <span className="mr-2">送信中です</span>
-                <ReloadIcon
-                  className="animate-spin motion-reduce:hidden"
-                  aria-hidden
-                />
-              </>
-            ) : (
-              "パスワードリセット URL を送信する"
-            )}
-          </Button>
-        </RemixForm>
-      </Form>
-    </Card>
+        </ActionCard>
+      </RemixForm>
+    </Form>
   );
 }
