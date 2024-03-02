@@ -1,5 +1,6 @@
 import type { LinksFunction } from "@remix-run/node";
 import { Link, Outlet } from "@remix-run/react";
+import { Logo } from "~/components/logo";
 import { SideMenu } from "~/components/side-menu";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
@@ -17,7 +18,7 @@ export default function LoggedInLayout() {
           <SideMenu />
         </div>
         <div className="hidden md:flex h-11 px-4 items-center flex-grow">
-          <div className="font-bold text-xl">顧客管理システム</div>
+          <Logo />
           <nav className="ml-12 flex-grow h-full">
             <ul className="flex gap-4 h-full">
               <MenuItem label="顧客" href="/customers" />

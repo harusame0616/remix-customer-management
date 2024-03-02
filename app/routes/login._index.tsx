@@ -12,6 +12,7 @@ import z from "zod";
 import { ActionCard } from "~/components/action-card";
 import { ErrorMessage } from "~/components/error-message";
 import { FormInput } from "~/components/form-input";
+import { Logo } from "~/components/logo";
 import { Form as ShadcnForm } from "~/components/ui/form";
 import {
   PASSWORD_MAX_LENGTH,
@@ -84,11 +85,8 @@ export default function Index() {
         className="mt-[10%] max-w-md w-full"
         aria-labelledby="login-section-text"
       >
-        <h1
-          className="text-xl text-center mb-4 font-bold"
-          id="login-section-text"
-        >
-          顧客管理システム
+        <h1 id="login-section-text" className="text-center mb-4">
+          <Logo />
         </h1>
         <h2 className="text-center mb-1">ログイン</h2>
         <ErrorMessage message={isSubmitting ? "" : actionData?.message} />
