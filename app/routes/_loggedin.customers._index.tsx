@@ -25,17 +25,40 @@ import { customersFixture } from "~/fixtures/customers";
 import { usePagination } from "~/hooks/use-pagination";
 import { useSort } from "~/hooks/use-sort";
 import { PER_PAGE, toPage } from "~/lib/pagination";
-import { SortOrder } from "~/lib/table";
+import { SortOrder, toSortOrder } from "~/lib/table";
 
 export const meta: MetaFunction = () => {
   return [{ title: "顧客一覧 - 顧客管理システム" }];
 };
 
+function isCustomerKey(
+  key: string
+): key is keyof (typeof customersFixture)[number] {
+  return key in customersFixture[0];
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const page = Number(new URL(request.url).searchParams.get("page"));
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get("page"));
+  const sortKey = url.searchParams.get("sortKey") ?? "fullName";
+  const sortOrder = toSortOrder(url.searchParams.get("sortOrder"));
+
+  if (!isCustomerKey(sortKey)) {
+    return new Response("Invalid sort key", { status: 400 });
+  }
 
   const offset = (page - 1) * PER_PAGE;
   const customers = customersFixture
+    .slice()
+    .sort((a, b) => {
+      if (sortOrder === "asc") {
+        return `${a[sortKey]}`.localeCompare(`${b[sortKey]}`);
+      } else if (sortOrder === "desc") {
+        return `${b[sortKey]}`.localeCompare(`${a[sortKey]}`);
+      } else {
+        throw new Error("Invalid sort order");
+      }
+    })
     .slice(offset, offset + PER_PAGE)
     .map((customer) => ({ ...customer, note: "" }));
 

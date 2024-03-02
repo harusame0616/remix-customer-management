@@ -6999,4 +6999,4 @@ export const customersFixture = [
     address: "東京都中央区日本橋本町1-1-8",
     company: "",
   },
-];
+] as const;
