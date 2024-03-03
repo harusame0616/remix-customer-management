@@ -25,9 +25,7 @@ export default function Page() {
   const param = useParams();
 
   const [, , , customerView] = useMatches();
-  const viewTabId = customerView
-    ? customerView.pathname.split("/")[3]
-    : "profiles";
+  const viewTabId = customerView?.pathname.split("/")[3] || "profiles";
 
   if (!param.customerId) {
     return <div>error</div>;
