@@ -1,16 +1,9 @@
 import { Separator } from "@radix-ui/react-separator";
 import { defer } from "@remix-run/node";
-import {
-  Await,
-  Link,
-  Outlet,
-  useLoaderData,
-  useMatches,
-  useParams,
-} from "@remix-run/react";
+import { Await, Outlet, useLoaderData, useParams } from "@remix-run/react";
 import { Suspense } from "react";
+import { LinkTabs } from "~/components/link-tabs";
 import { Skeleton } from "~/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export async function loader() {
   return defer({
@@ -24,14 +17,15 @@ export default function Page() {
   const loadData = useLoaderData<typeof loader>();
   const param = useParams();
 
-  const [, , , customerView] = useMatches();
-  const viewTabId = customerView?.pathname.split("/")[3] || "profiles";
-
   if (!param.customerId) {
     return <div>error</div>;
   }
 
   const customerId = param.customerId;
+  const links = [
+    { to: `/customers/${customerId}`, label: "プロフィール", end: true },
+    { to: `/customers/${customerId}/negotiations`, label: "商談", end: true },
+  ];
 
   return (
     <div className="flex flex-col h-full">
@@ -49,19 +43,8 @@ export default function Page() {
         </h1>
       </div>
       <Separator />
-      <Tabs defaultValue={viewTabId}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="profiles" asChild>
-            <Link className="no-underline" to={`/customers/${customerId}`}>
-              プロフィール
-            </Link>
-          </TabsTrigger>
-          <TabsTrigger className="no-underline" value="negotiations" asChild>
-            <Link to={`/customers/${customerId}/negotiations`}>商談</Link>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-      <div className="flex flex-col flex-grow">
+      <LinkTabs links={links} />
+      <div className="flex flex-col flex-grow overflow-auto">
         <Outlet />
       </div>
     </div>
