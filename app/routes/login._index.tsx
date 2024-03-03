@@ -12,6 +12,7 @@ import z from "zod";
 import { ActionCard } from "~/components/action-card";
 import { ErrorMessage } from "~/components/error-message";
 import { FormInput } from "~/components/form-input";
+import { LoginQRCode } from "~/components/login-qr-code";
 import { Logo } from "~/components/logo";
 import { Form as ShadcnForm } from "~/components/ui/form";
 import {
@@ -92,6 +93,10 @@ export default function Index() {
         <ErrorMessage message={isSubmitting ? "" : actionData?.message} />
         <LoginForm isSubmitting={isSubmitting} />
       </section>
+      <div className="mt-12">
+        モバイルアクセス用 URL
+        <LoginQRCode />
+      </div>
       <DemoDescription />
     </div>
   );
