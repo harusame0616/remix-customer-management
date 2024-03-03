@@ -138,6 +138,7 @@ type Customer = {
 };
 
 const headers = [
+  { sortKey: "detail-link", label: "詳細", noSort: true },
   { sortKey: "fullName", label: "名前" },
   { sortKey: "address", label: "住所" },
   { sortKey: "phoneNumber", label: "電話番号" },
@@ -171,14 +172,26 @@ function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
     <Table className="overflow-auto min-w-[840px]">
       <TableHeader className="sticky top-0 bg-background drop-shadow-sm ">
         <TableRow>
-          {headers.map(({ sortKey, label }) => (
-            <HeaderItem key={sortKey} sortKey={sortKey} label={label} />
+          {headers.map(({ sortKey, label, noSort }) => (
+            <HeaderItem
+              key={sortKey}
+              sortKey={sortKey}
+              label={label}
+              noSort={noSort}
+            />
           ))}
         </TableRow>
       </TableHeader>
       <TableBody>
         {customers.map((customer, index) => (
           <TableRow key={index}>
+            <TableCell>
+              {props.skeleton ? (
+                <Skeleton className="h-4 w-4" />
+              ) : (
+                <Link to={`/customers/id`}>詳細</Link>
+              )}
+            </TableCell>
             <TableCell>{customer.fullName}</TableCell>
             <TableCell>{customer.address}</TableCell>
             <TableCell>{customer.phoneNumber}</TableCell>
@@ -194,19 +207,24 @@ function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
 type HeaderItemProps = {
   sortKey: string;
   label: string;
+  noSort?: boolean;
 };
-function HeaderItem({ sortKey, label }: HeaderItemProps) {
+function HeaderItem({ sortKey, label, noSort }: HeaderItemProps) {
   const { changeSort, sortOrder, sortKey: currentSortKey } = useSort();
   return (
     <TableHead>
-      <Button
-        onClick={() => changeSort(sortKey)}
-        variant="ghost"
-        className="w-full text-left p-0 flex justify-start font-bold"
-      >
-        <span className="mr-2">{label}</span>
-        {currentSortKey === sortKey && <SortIcon sort={sortOrder} />}
-      </Button>
+      {noSort ? (
+        <span>{label}</span>
+      ) : (
+        <Button
+          onClick={() => changeSort(sortKey)}
+          variant="ghost"
+          className="w-full text-left p-0 flex justify-start font-bold"
+        >
+          <span className="mr-2">{label}</span>
+          {currentSortKey === sortKey && <SortIcon sort={sortOrder} />}
+        </Button>
+      )}
     </TableHead>
   );
 }
