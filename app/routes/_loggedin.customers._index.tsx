@@ -26,6 +26,7 @@ import { usePagination } from "~/hooks/use-pagination";
 import { useSort } from "~/hooks/use-sort";
 import { PER_PAGE, toPage } from "~/lib/pagination";
 import { SortOrder, toSortOrder } from "~/lib/table";
+import { cn } from "~/lib/utils";
 
 export const meta: MetaFunction = () => {
   return [{ title: "顧客一覧 - 顧客管理システム" }];
@@ -62,8 +63,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     .slice(offset, offset + PER_PAGE)
     .map((customer) => ({ ...customer, note: "" }));
 
-  console.log(customers);
-
   return defer({
     customers: new Promise<typeof customers>((r) =>
       setTimeout(() => r(customers), 1000)
@@ -79,8 +78,6 @@ export default function Index() {
 
   const navigation = useNavigation();
   const { sortKey, sortOrder } = useSort();
-
-  console.log(loadData);
 
   return (
     <div className="flex flex-col h-full">
@@ -115,7 +112,9 @@ export default function Index() {
       <Separator />
       <Suspense>
         <Await resolve={loadData.totalCount}>
-          {(totalCount) => <Pagination totalCount={totalCount} />}
+          {(totalCount) => (
+            <Pagination totalCount={totalCount} className="md:px-4" />
+          )}
         </Await>
       </Suspense>
     </div>
@@ -169,7 +168,7 @@ function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
       })
     : props.customers;
   return (
-    <Table className="overflow-auto min-w-[640px]">
+    <Table className="overflow-auto min-w-[840px]">
       <TableHeader className="sticky top-0 bg-background drop-shadow-sm ">
         <TableRow>
           {headers.map(({ sortKey, label }) => (
@@ -220,13 +219,13 @@ function SortIcon({ sort }: { sort: SortOrder }) {
   );
 }
 
-type PaginationProps = { totalCount: number };
-function Pagination({ totalCount }: PaginationProps) {
+type PaginationProps = { totalCount: number; className: string };
+function Pagination({ totalCount, className }: PaginationProps) {
   const { currentPage, nextUrl, goToPage, prevUrl, totalPage } =
     usePagination(totalCount);
 
   return (
-    <div className="flex justify-end gap-8 px-8">
+    <div className={cn("flex flex-col md:flex-row md:justify-end", className)}>
       <div>
         <ShadCNPagination className="py-1">
           <PaginationContent className="flex">
@@ -243,28 +242,32 @@ function Pagination({ totalCount }: PaginationProps) {
           </PaginationContent>
         </ShadCNPagination>
       </div>
-      <div className="flex items-center">全 {totalPage}ページ</div>
-      <form
-        className="flex items-center gap-2"
-        method="GET"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const page = new FormData(e.target as HTMLFormElement).get("page");
-          goToPage(toPage(page));
-        }}
-      >
-        <Input
-          defaultValue={currentPage}
-          type="number"
-          name="page"
-          min={1}
-          required
-          max={totalPage}
-          className="w-24"
-        />
-        ページ目へ
-        <Button variant="outline">移動</Button>
-      </form>
+      <div className="flex gap-4 pb-1 justify-center -mt-1 md:mt-0 md:pt-1">
+        <div className="flex items-center text-sm text-muted-foreground">
+          （全 {totalPage}ページ）
+        </div>
+        <form
+          className="flex items-center gap-2"
+          method="GET"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const page = new FormData(e.target as HTMLFormElement).get("page");
+            goToPage(toPage(page));
+          }}
+        >
+          <Input
+            aria-label="移動先のページ番号"
+            defaultValue={currentPage}
+            type="number"
+            name="page"
+            min={1}
+            required
+            max={totalPage}
+            className="max-w-16 h-11"
+          />
+          <Button variant="outline">ページへ移動</Button>
+        </form>
+      </div>
     </div>
   );
 }
