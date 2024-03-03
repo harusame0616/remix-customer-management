@@ -1,9 +1,10 @@
 import type { LinksFunction } from "@remix-run/node";
-import { Link, Outlet } from "@remix-run/react";
+import { Link, NavLink, Outlet } from "@remix-run/react";
 import { Logo } from "~/components/logo";
 import { SideMenu } from "~/components/side-menu";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { cn } from "~/lib/utils";
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -44,14 +45,16 @@ type MenuItemProps = {
 };
 function MenuItem({ label, href }: MenuItemProps) {
   return (
-    <li className="h-11 flex items-center text-lg font-bold text-muted-foreground hover:text-inherit">
-      <Link
-        className="group px-2 no-underline h-full flex items-center transition duration-300 relative"
+    <li className="h-11 flex items-center">
+      <NavLink
+        className="group px-2 no-underline h-full flex items-center transition duration-300 relative motion-reduce:duration-0"
         to={href}
       >
-        <span>{label}</span>
-        <span className="absolute bottom-0 right-0 left-0 block h-[2px] opacity-0 bg-black group-hover:opacity-60 transition-all" />
-      </Link>
+        <span className="text-lg font-bold text-muted-foreground hover-inherit group-aria-current-page:text-inherit">
+          {label}
+        </span>
+        <span className="absolute bottom-0 right-0 left-0 block h-[2px] opacity-0 bg-black group-hover:opacity-60 transition-all group-aria-current-page:opacity-60" />
+      </NavLink>
     </li>
   );
 }
