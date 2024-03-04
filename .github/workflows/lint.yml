@@ -1,0 +1,30 @@
+name: Lint
+on:
+  push:
+    branches:
+      - master
+      - feature/*
+  pull_request:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: pnpm セットアップ
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - name: node セットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: "pnpm"
+      - name: 依存関係インストール
+        run: pnpm install --frozen-lockfile
+      - name: eslint 実行
+        run: pnpm run lint:check
+      - name: typecheck 実行
+        run: pnpm run typecheck
