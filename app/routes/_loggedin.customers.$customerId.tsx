@@ -9,7 +9,7 @@ export async function loader() {
   return defer({
     success: true,
     fullName: new Promise<string>((resolve) =>
-      setTimeout(() => resolve("山田 太郎"), 1000)
+      setTimeout(() => resolve("山田 太郎"), 1000),
     ),
   });
 }

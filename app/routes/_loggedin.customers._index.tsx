@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
 };
 
 function isCustomerKey(
-  key: string
+  key: string,
 ): key is keyof (typeof customersFixture)[number] {
   return key in customersFixture[0];
 }
@@ -47,10 +47,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   return defer({
     customers: new Promise<typeof customers>((r) =>
-      setTimeout(() => r(customers), 1000)
+      setTimeout(() => r(customers), 1000),
     ),
     totalCount: new Promise<number>((r) =>
-      setTimeout(() => r(customersFixture.length), 200)
+      setTimeout(() => r(customersFixture.length), 200),
     ),
   });
 };

@@ -14,7 +14,7 @@ export function LinkTabs({ links }: LinkTabsProps) {
             className={({ isActive }) =>
               cn(
                 "no-underline h-11 flex items-center justify-center",
-                isActive && "rounded shadow bg-background grow"
+                isActive && "rounded shadow bg-background grow",
               )
             }
             end={link.end}
