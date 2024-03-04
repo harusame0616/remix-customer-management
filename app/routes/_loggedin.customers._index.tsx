@@ -1,18 +1,9 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { LoaderFunctionArgs, defer, type MetaFunction } from "@remix-run/node";
 import { Await, Link, useLoaderData, useNavigation } from "@remix-run/react";
 import { Suspense } from "react";
-import { Button } from "~/components/ui/button";
+import { Table } from "~/components/table";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
 import { customersFixture } from "~/fixtures/customers";
 import { useSort } from "~/hooks/use-sort";
 import { PER_PAGE, toPage } from "~/lib/pagination";
@@ -129,7 +120,7 @@ type Customer = {
 };
 
 const headers = [
-  { sortKey: "detail-link", label: "詳細", noSort: true },
+  { sortKey: "detailLink", label: "詳細", noSort: true },
   { sortKey: "fullName", label: "名前" },
   { sortKey: "address", label: "住所" },
   { sortKey: "phoneNumber", label: "電話番号" },
@@ -151,6 +142,7 @@ function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
   const customers = props.skeleton
     ? Array.from({ length: 10 }).map(() => {
         return {
+          detailLink: <Skeleton className="h-4 w-8" />,
           fullName: <Skeleton className="h-4 w-20" />,
           address: <Skeleton className="h-4 w-40" />,
           phoneNumber: <Skeleton className="h-4 w-20" />,
@@ -158,72 +150,17 @@ function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
           note: <Skeleton className="h-4 w-4" />,
         };
       })
-    : props.customers;
-  return (
-    <Table className="overflow-auto min-w-[840px]">
-      <TableHeader className="sticky top-0 bg-background drop-shadow-sm ">
-        <TableRow>
-          {headers.map(({ sortKey, label, noSort }) => (
-            <HeaderItem
-              key={sortKey}
-              sortKey={sortKey}
-              label={label}
-              noSort={noSort}
-            />
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {customers.map((customer, index) => (
-          <TableRow key={index}>
-            <TableCell>
-              {props.skeleton ? (
-                <Skeleton className="h-4 w-4" />
-              ) : (
-                <Link to={`/customers/id`}>詳細</Link>
-              )}
-            </TableCell>
-            <TableCell>{customer.fullName}</TableCell>
-            <TableCell>{customer.address}</TableCell>
-            <TableCell>{customer.phoneNumber}</TableCell>
-            <TableCell>{customer.email}</TableCell>
-            <TableCell>{customer.note}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-}
+    : props.customers.map((customer) => ({
+        ...customer,
+        detailLink: <Link to={`/customers/${customer.fullName}`}>詳細</Link>,
+      }));
 
-type HeaderItemProps = {
-  sortKey: string;
-  label: string;
-  noSort?: boolean;
-};
-function HeaderItem({ sortKey, label, noSort }: HeaderItemProps) {
-  const { changeSort, sortOrder, sortKey: currentSortKey } = useSort();
   return (
-    <TableHead>
-      {noSort ? (
-        <span>{label}</span>
-      ) : (
-        <Button
-          onClick={() => changeSort(sortKey)}
-          variant="ghost"
-          className="w-full text-left p-0 flex justify-start font-bold"
-        >
-          <span className="mr-2">{label}</span>
-          {currentSortKey === sortKey && <SortIcon sort={sortOrder} />}
-        </Button>
-      )}
-    </TableHead>
-  );
-}
-
-function SortIcon({ sort }: { sort: SortOrder }) {
-  return sort === SortOrder.Asc ? (
-    <ChevronDownIcon className="降順" />
-  ) : (
-    <ChevronUpIcon className="昇順" />
+    <Table
+      rows={customers}
+      headers={headers}
+      sortKey={props.sortKey}
+      sortOrder={props.sortOrder}
+    />
   );
 }
