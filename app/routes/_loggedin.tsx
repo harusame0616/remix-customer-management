@@ -1,10 +1,9 @@
 import type { LinksFunction } from "@remix-run/node";
-import { Link, NavLink, Outlet } from "@remix-run/react";
+import { NavLink, Outlet } from "@remix-run/react";
 import { Logo } from "~/components/logo";
 import { SideMenu } from "~/components/side-menu";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { cn } from "~/lib/utils";
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
