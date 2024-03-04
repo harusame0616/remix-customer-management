@@ -24,7 +24,9 @@ jobs:
           cache: "pnpm"
       - name: 依存関係インストール
         run: pnpm install --frozen-lockfile
-      - name: eslint 実行
+      - name: lint check
         run: pnpm run lint:check
-      - name: typecheck 実行
+      - name: format check
+        run: pnpm run format:check
+      - name: typecheck
         run: pnpm run typecheck
