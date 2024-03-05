@@ -2,8 +2,7 @@ name: Lint
 on:
   push:
     branches:
-      - master
-      - feature/*
+      - main
   pull_request:
     branches:
       - main
