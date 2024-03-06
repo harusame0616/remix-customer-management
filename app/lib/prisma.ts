@@ -16,7 +16,7 @@ const vercelCommitRefSchema = z
   .transform((val) => val || "default");
 const databaseUrlSchema = z.string();
 
-const repoName = "remix-customer-management";
+const repoName = "remix_customer_management";
 const env = vercelEnvSchema.parse(process.env.VERCEL_ENV);
 const branchName = vercelCommitRefSchema.parse(
   process.env.VERCEL_GIT_COMMIT_REF,
