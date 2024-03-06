@@ -8,6 +8,9 @@ dependencies:
   "@hookform/resolvers":
     specifier: ^3.3.4
     version: 3.3.4(react-hook-form@7.50.1)
+  "@prisma/client":
+    specifier: 5.10.2
+    version: 5.10.2(prisma@5.10.2)
   "@radix-ui/react-dialog":
     specifier: ^1.0.5
     version: 1.0.5(@types/react-dom@18.2.7)(@types/react@18.2.20)(react-dom@18.2.0)(react@18.2.0)
@@ -65,6 +68,9 @@ dependencies:
   prettier:
     specifier: ^3.2.5
     version: 3.2.5
+  prisma:
+    specifier: ^5.10.2
+    version: 5.10.2
   qrcode:
     specifier: ^1.5.3
     version: 1.5.3
@@ -1404,6 +1410,69 @@ packages:
         integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==,
       }
     engines: { node: ^12.20.0 || ^14.18.0 || >=16.0.0 }
+    dev: false
+
+  /@prisma/client@5.10.2(prisma@5.10.2):
+    resolution:
+      {
+        integrity: sha512-ef49hzB2yJZCvM5gFHMxSFL9KYrIP9udpT5rYo0CsHD4P9IKj473MbhU1gjKKftiwWBTIyrt9jukprzZXazyag==,
+      }
+    engines: { node: ">=16.13" }
+    requiresBuild: true
+    peerDependencies:
+      prisma: "*"
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      prisma: 5.10.2
+    dev: false
+
+  /@prisma/debug@5.10.2:
+    resolution:
+      {
+        integrity: sha512-bkBOmH9dpEBbMKFJj8V+Zp8IZHIBjy3fSyhLhxj4FmKGb/UBSt9doyfA6k1UeUREsMJft7xgPYBbHSOYBr8XCA==,
+      }
+    dev: false
+
+  /@prisma/engines-version@5.10.0-34.5a9203d0590c951969e85a7d07215503f4672eb9:
+    resolution:
+      {
+        integrity: sha512-uCy/++3Jx/O3ufM+qv2H1L4tOemTNqcP/gyEVOlZqTpBvYJUe0tWtW0y3o2Ueq04mll4aM5X3f6ugQftOSLdFQ==,
+      }
+    dev: false
+
+  /@prisma/engines@5.10.2:
+    resolution:
+      {
+        integrity: sha512-HkSJvix6PW8YqEEt3zHfCYYJY69CXsNdhU+wna+4Y7EZ+AwzeupMnUThmvaDA7uqswiHkgm5/SZ6/4CStjaGmw==,
+      }
+    requiresBuild: true
+    dependencies:
+      "@prisma/debug": 5.10.2
+      "@prisma/engines-version": 5.10.0-34.5a9203d0590c951969e85a7d07215503f4672eb9
+      "@prisma/fetch-engine": 5.10.2
+      "@prisma/get-platform": 5.10.2
+    dev: false
+
+  /@prisma/fetch-engine@5.10.2:
+    resolution:
+      {
+        integrity: sha512-dSmXcqSt6DpTmMaLQ9K8ZKzVAMH3qwGCmYEZr/uVnzVhxRJ1EbT/w2MMwIdBNq1zT69Rvh0h75WMIi0mrIw7Hg==,
+      }
+    dependencies:
+      "@prisma/debug": 5.10.2
+      "@prisma/engines-version": 5.10.0-34.5a9203d0590c951969e85a7d07215503f4672eb9
+      "@prisma/get-platform": 5.10.2
+    dev: false
+
+  /@prisma/get-platform@5.10.2:
+    resolution:
+      {
+        integrity: sha512-nqXP6vHiY2PIsebBAuDeWiUYg8h8mfjBckHh6Jezuwej0QJNnjDiOq30uesmg+JXxGk99nqyG3B7wpcOODzXvg==,
+      }
+    dependencies:
+      "@prisma/debug": 5.10.2
     dev: false
 
   /@radix-ui/primitive@1.0.1:
@@ -7755,6 +7824,18 @@ packages:
     dependencies:
       parse-ms: 2.1.0
     dev: true
+
+  /prisma@5.10.2:
+    resolution:
+      {
+        integrity: sha512-hqb/JMz9/kymRE25pMWCxkdyhbnIWrq+h7S6WysJpdnCvhstbJSNP/S6mScEcqiB8Qv2F+0R3yG+osRaWqZacQ==,
+      }
+    engines: { node: ">=16.13" }
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      "@prisma/engines": 5.10.2
+    dev: false
 
   /proc-log@3.0.0:
     resolution:
