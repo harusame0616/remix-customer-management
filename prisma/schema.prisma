@@ -31,6 +31,42 @@ model Customer {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Deal Deal[]
+}
+
+model Deal {
+  dealId String @id @default(uuid()) @db.Uuid
+
+  title       String
+  content     String
+  urls        String[]
+  deadline    DateTime?
+  attachments String[]
+
+  platformId String
+  statusId   String
+  customerId String @db.Uuid
+
+  customer Customer     @relation(fields: [customerId], references: [customerId])
+  platform DealPlatform @relation(fields: [platformId], references: [dealPlatformId])
+  status   DealStatus   @relation(fields: [statusId], references: [dealStatusId])
+}
+
+model DealPlatform {
+  dealPlatformId String @id
+
+  label String
+
+  Deal Deal[]
+}
+
+model DealStatus {
+  dealStatusId String @id
+
+  label String
+
+  Deal Deal[]
 }
 
 enum Sex {
