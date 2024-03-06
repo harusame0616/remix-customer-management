@@ -25,6 +25,13 @@ export const DealStatus = {
   },
 } as const;
 
+type DealStatusId =
+  (typeof DealStatus)[keyof typeof DealStatus]["dealStatusId"];
+export const dealStatuses = Object.values(DealStatus);
+export const dealStatusIds = dealStatuses.map(
+  ({ dealStatusId }) => dealStatusId,
+) as [DealStatusId, ...DealStatusId[]];
+
 export const DealPlatform = {
   Coconala: {
     dealPlatformId: "coconala",
