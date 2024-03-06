@@ -36,7 +36,7 @@ const customerFormSchema = z.object({
       .regex(/^\d+$/, "数字とハイフン以外が使われています")
       .min(9)
       .max(11)
-      .or(z.literal(""))
+      .or(z.literal("")),
   ),
   mobilePhoneNumber: z.preprocess(
     (v) => (v as string).replace(/-/g, ""),
@@ -45,7 +45,7 @@ const customerFormSchema = z.object({
       .regex(/^\d+$/, "数字とハイフン以外が使われています")
       .min(9)
       .max(11)
-      .or(z.literal(""))
+      .or(z.literal("")),
   ),
   postNumber: z.string().optional(),
   address: z.string().optional(),

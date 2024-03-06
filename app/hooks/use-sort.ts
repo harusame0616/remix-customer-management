@@ -13,7 +13,7 @@ export function useSort() {
     "fullName";
   const sortOrder = toSortOrder(
     new URLSearchParams(navigation.location?.search).get(SORT_ORDER_NAME) ||
-      searchParams.get(SORT_ORDER_NAME)
+      searchParams.get(SORT_ORDER_NAME),
   );
 
   const changeSort = (sortKey: string) => {
@@ -25,7 +25,7 @@ export function useSort() {
         SORT_ORDER_NAME,
         currentSortKey !== sortKey || currentSortOrder === SortOrder.Desc
           ? SortOrder.Asc
-          : SortOrder.Desc
+          : SortOrder.Desc,
       );
 
       return prev;

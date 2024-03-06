@@ -18,7 +18,7 @@ export function loader() {
   }));
   return defer({
     negotiations: new Promise<typeof negotiations>((r) =>
-      setTimeout(() => r(negotiations), 1000)
+      setTimeout(() => r(negotiations), 1000),
     ),
   });
 }
@@ -85,7 +85,7 @@ type NegotiationTableSkeletonProps = {
   sortOrder: SortOrder;
 };
 function NegotiationTable(
-  props: NegotiationTableProps | NegotiationTableSkeletonProps
+  props: NegotiationTableProps | NegotiationTableSkeletonProps,
 ) {
   const customers = props.skeleton
     ? Array.from({ length: 10 }).map(() => {

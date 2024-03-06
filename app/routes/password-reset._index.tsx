@@ -41,7 +41,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           .map(({ message }) => message)
           .join("\n"),
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -53,7 +53,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           success: false,
           message: "リセットに失敗しました。時間をおいてお試しください。",
         },
-        { status: 401 }
+        { status: 401 },
       );
 };
 

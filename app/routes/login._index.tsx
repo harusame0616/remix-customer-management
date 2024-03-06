@@ -41,11 +41,11 @@ const loginParamSchema = z.object({
     .min(1, "パスワードを入力してください。")
     .min(
       PASSWORD_MIN_LENGTH,
-      `パスワードは${PASSWORD_MIN_LENGTH}文字以上にしてください。`
+      `パスワードは${PASSWORD_MIN_LENGTH}文字以上にしてください。`,
     )
     .max(
       PASSWORD_MAX_LENGTH,
-      `パスワードは${PASSWORD_MAX_LENGTH}文字以下にしてください。`
+      `パスワードは${PASSWORD_MAX_LENGTH}文字以下にしてください。`,
     ),
 });
 
@@ -59,7 +59,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           .map(({ message }) => message)
           .join("\n"),
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -72,7 +72,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           message:
             "ログインに失敗しました。メールアドレスとパスワードを確認してください。",
         },
-        { status: 401 }
+        { status: 401 },
       );
 };
 

@@ -14,7 +14,7 @@ export async function loader() {
 
   return defer({
     customer: new Promise<typeof customer>((resolve) =>
-      setTimeout(() => resolve(customer), 1000)
+      setTimeout(() => resolve(customer), 1000),
     ),
   });
 }
@@ -37,7 +37,7 @@ export default function Page() {
 
 function skeletonOrValue(
   skeleton: boolean | undefined,
-  value: React.ReactNode
+  value: React.ReactNode,
 ) {
   return skeleton ? <Skeleton className="h-4 w-20" /> : value;
 }
@@ -79,7 +79,7 @@ function Profile({ customer, skeleton }: ProfileProps) {
         skeleton,
         customer?.phoneNumber
           ? toHyphenPhoneNumber(customer.phoneNumber)
-          : undefined
+          : undefined,
       ),
       href: customer?.phoneNumber ? `tel:${customer.phoneNumber}` : undefined,
     },
@@ -89,7 +89,7 @@ function Profile({ customer, skeleton }: ProfileProps) {
         skeleton,
         customer?.mobilePhoneNumber
           ? toHyphenMobilePhoneNumber(customer.mobilePhoneNumber)
-          : undefined
+          : undefined,
       ),
       href: customer?.mobilePhoneNumber
         ? `tel:${customer.mobilePhoneNumber}`
@@ -106,7 +106,7 @@ function Profile({ customer, skeleton }: ProfileProps) {
         skeleton,
         customer?.postNumber
           ? toHyphenPostNumber(customer.postNumber)
-          : undefined
+          : undefined,
       ),
     },
     {
