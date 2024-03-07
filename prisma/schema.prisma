@@ -46,9 +46,9 @@ model Deal {
 
   platformId String
   statusId   String
-  customerId String @db.Uuid
+  customerId String? @db.Uuid
 
-  customer Customer     @relation(fields: [customerId], references: [customerId])
+  customer Customer?    @relation(fields: [customerId], references: [customerId])
   platform DealPlatform @relation(fields: [platformId], references: [dealPlatformId])
   status   DealStatus   @relation(fields: [statusId], references: [dealStatusId])
 }
