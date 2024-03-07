@@ -1,18 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect, type MetaFunction } from "@remix-run/node";
-import { useFieldArray, useForm } from "react-hook-form";
+import {
+  ActionFunctionArgs,
+  json,
+  redirect,
+  type MetaFunction,
+} from "@remix-run/node";
+import { useSubmit } from "@remix-run/react";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { ActionCard } from "~/components/action-card";
-import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
 import { Separator } from "~/components/ui/separator";
 import {
   DEAL_ATTACHMENT_NAME_MAX_LENGTH,
+  DEAL_ATTACHMENT_PATH_MAX_LENGTH,
   DEAL_CONTENT_MAX_LENGTH,
   DEAL_TITLE_MAX_LENGTH,
   DEAL_URL_MAX_LENGTH,
 } from "~/domains/deal/constants";
-import { dealStatusIds, dealStatuses } from "~/domains/deal/enum";
+import { DealPlatform, dealStatusIds, dealStatuses } from "~/domains/deal/enum";
+import prisma from "~/lib/prisma";
 import { FormInput, FormRadio, FormTextarea } from "../components/form-input";
 
 const pageTitle = "取引の新規登録";
@@ -20,29 +27,67 @@ export const meta: MetaFunction = () => {
   return [{ title: `${pageTitle} - 顧客管理システム` }];
 };
 
-export const action = async () => {
-  // TODO: not implement
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const id = crypto.randomUUID();
-  return redirect(`/deals/${id}`);
-};
-
-export default function Page() {
-  const formSchema = z.object({
+const actionSchema = z.object({
+  deal: z.object({
     title: z.string().max(DEAL_TITLE_MAX_LENGTH),
     content: z.string().max(DEAL_CONTENT_MAX_LENGTH),
-    deadline: z.coerce.date().or(z.literal("")),
+    deadline: z.coerce.date().or(z.undefined()),
     status: z.enum(dealStatusIds),
     url: z.string().max(DEAL_URL_MAX_LENGTH),
-    attachments: z.array(
-      z.object({
-        name: z.string().max(DEAL_ATTACHMENT_NAME_MAX_LENGTH),
-      }),
-    ),
-  });
-  type CustomerSchema = typeof formSchema;
+    attachments: z.array(z.string().max(DEAL_ATTACHMENT_PATH_MAX_LENGTH)),
+  }),
+});
 
-  const form = useForm<z.input<CustomerSchema>>({
+export async function action({ request }: ActionFunctionArgs) {
+  const actionParam = actionSchema.safeParse(await request.json());
+
+  if (!actionParam.success) {
+    return json({ success: false, message: "パラマメーター" }, { status: 400 });
+  }
+
+  try {
+    const { dealId } = await prisma.deal.create({
+      data: {
+        title: actionParam.data.deal.title,
+        content: actionParam.data.deal.content,
+        deadline: actionParam.data.deal.deadline,
+        status: { connect: { dealStatusId: actionParam.data.deal.status } },
+        url: actionParam.data.deal.url,
+        platform: {
+          connect: { dealPlatformId: DealPlatform.Other.dealPlatformId },
+        },
+      },
+    });
+    return redirect(`/deals/${dealId}`);
+  } catch (e) {
+    return json(
+      { success: false, message: "取引の登録に失敗しました" },
+      { status: 500 },
+    );
+  }
+}
+
+const formSchema = z.object({
+  title: z.string().min(1).max(DEAL_TITLE_MAX_LENGTH),
+  content: z.string().max(DEAL_CONTENT_MAX_LENGTH),
+  deadline: z.coerce
+    .date()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : v)),
+  status: z.enum(dealStatusIds),
+  url: z.string().max(DEAL_URL_MAX_LENGTH),
+  attachments: z.array(
+    z
+      .object({
+        name: z.string().max(DEAL_ATTACHMENT_NAME_MAX_LENGTH),
+      })
+      .transform((v) => v.name),
+  ),
+});
+export default function Page() {
+  const submit = useSubmit();
+
+  const form = useForm<z.input<typeof formSchema>>({
     defaultValues: {
       title: "",
       content: "",
@@ -54,13 +99,21 @@ export default function Page() {
     resolver: zodResolver(formSchema),
   });
 
-  const attachments = useFieldArray({
-    control: form.control,
-    name: "attachments",
-  });
+  // const attachments = useFieldArray({
+  //   control: form.control,
+  //   name: "attachments",
+  // });
 
   const handleSubmit = form.handleSubmit((data) => {
-    console.log(data);
+    submit(
+      JSON.stringify({
+        deal: data,
+      }),
+      {
+        method: "post",
+        encType: "application/json",
+      },
+    );
   });
 
   return (
@@ -118,7 +171,7 @@ export default function Page() {
                 name="status"
                 className="max-w-28"
               />
-              <Separator />
+              {/* <Separator />
               <div className="space-y-2">
                 {attachments.fields.map((field, index) => (
                   <div key={field.id} className="flex items-end gap-2">
@@ -151,7 +204,7 @@ export default function Page() {
                 >
                   添付ファイル追加
                 </Button>
-              </div>
+              </div> */}
             </ActionCard>
           </form>
         </Form>

@@ -23,6 +23,8 @@ jobs:
           cache: "pnpm"
       - name: 依存関係インストール
         run: pnpm install --frozen-lockfile
+      - name: スキーマ生成
+        run: pnpm prisma generate
       - name: lint check
         run: pnpm run lint:check
       - name: format check

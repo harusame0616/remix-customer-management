@@ -45,4 +45,8 @@ export const DealPlatform = {
     dealPlatformId: "cloud_works",
     label: "CloudWorks",
   },
+  Other: {
+    dealPlatformId: "other",
+    label: "その他",
+  },
 } as const;
