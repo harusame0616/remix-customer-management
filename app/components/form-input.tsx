@@ -11,6 +11,7 @@ import { Input } from "~/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Switch } from "./ui/switch";
 import { useId, useState } from "react";
+import { Textarea } from "./ui/textarea";
 
 type FormInputProps<Schema extends FieldValues> = {
   control: UseFormReturn<Schema>["control"];
@@ -68,6 +69,51 @@ export function FormInput<Schema extends FieldValues>({
     />
   );
 }
+
+type FormTextarea<Schema extends FieldValues> = {
+  control: UseFormReturn<Schema>["control"];
+  label: string;
+  description?: string;
+  name: Path<Schema>;
+  required?: boolean;
+} & React.ComponentProps<typeof Textarea>;
+export function FormTextarea<Schema extends FieldValues>({
+  control,
+  label,
+  name,
+  required = false,
+  description,
+  ...props
+}: FormTextarea<Schema>) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <div>
+            <FormLabel>
+              {label}
+              <span className="text-xs text-muted-foreground">
+                {required ? (
+                  <span className="text-red-600">（必須）</span>
+                ) : (
+                  "（任意）"
+                )}
+              </span>
+            </FormLabel>
+            <FormDescription>{description}</FormDescription>
+          </div>
+          <FormControl>
+            <Textarea {...field} {...props} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
 type FormRadioProps<Schema extends FieldValues> = FormInputProps<Schema> & {
   selects: { label: string; value: string }[];
 } & React.ComponentProps<typeof Input>;
