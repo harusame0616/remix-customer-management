@@ -6,10 +6,9 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { useSubmit } from "@remix-run/react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { ActionCard } from "~/components/action-card";
-import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
 import { Separator } from "~/components/ui/separator";
 import {
@@ -100,10 +99,10 @@ export default function Page() {
     resolver: zodResolver(formSchema),
   });
 
-  const attachments = useFieldArray({
-    control: form.control,
-    name: "attachments",
-  });
+  // const attachments = useFieldArray({
+  //   control: form.control,
+  //   name: "attachments",
+  // });
 
   const handleSubmit = form.handleSubmit((data) => {
     submit(
@@ -172,7 +171,7 @@ export default function Page() {
                 name="status"
                 className="max-w-28"
               />
-              <Separator />
+              {/* <Separator />
               <div className="space-y-2">
                 {attachments.fields.map((field, index) => (
                   <div key={field.id} className="flex items-end gap-2">
@@ -205,7 +204,7 @@ export default function Page() {
                 >
                   添付ファイル追加
                 </Button>
-              </div>
+              </div> */}
             </ActionCard>
           </form>
         </Form>
