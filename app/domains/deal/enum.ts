@@ -25,12 +25,17 @@ export const DealStatus = {
   },
 } as const;
 
-type DealStatusId =
+export type DealStatusId =
   (typeof DealStatus)[keyof typeof DealStatus]["dealStatusId"];
 export const dealStatuses = Object.values(DealStatus);
 export const dealStatusIds = dealStatuses.map(
   ({ dealStatusId }) => dealStatusId,
 ) as [DealStatusId, ...DealStatusId[]];
+
+type DealStatusLabelMap = Record<DealStatusId, string>;
+export const dealStatusLabelMap = Object.fromEntries(
+  dealStatuses.map(({ dealStatusId, label }) => [dealStatusId, label]),
+) as DealStatusLabelMap;
 
 export const DealPlatform = {
   Coconala: {
