@@ -19,6 +19,7 @@ import { cn } from "~/lib/utils";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   if (!params.dealId) {
+    console.error("dealId is required");
     throw new Response("Bad Request", { status: 400 });
   }
 
