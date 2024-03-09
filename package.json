@@ -10,7 +10,7 @@
     "db:reset:preview": "SCHEMA_NAME=$(echo ${VERCEL_GIT_REPO_SLUG}_preview_${VERCEL_GIT_COMMIT_REF} | sed -e 's/[^[:alnum:]]/_/g') pnpm run db:reset:schema",
     "db:deploy": "prisma migrate deploy",
     "db:deploy:schema": "DATABASE_DIRECT_URL=\"${DATABASE_DIRECT_URL}?schema=${SCHEMA_NAME}\" pnpm run db:deploy",
-    "db:deploy:production": "SCHEMA_NAME=${VERCEL_GIT_REPO_SLUG}_production pnpm run db:deploy:schema",
+    "db:deploy:production": "SCHEMA_NAME=${VERCEL_GIT_REPO_SLUG}_production_${VERCEL_GIT_COMMIT_REF} pnpm run db:deploy:schema",
     "prebuild:preview": "pnpm run db:reset:preview",
     "prebuild:production": "pnpm prisma generate && pnpm run db:deploy:production",
     "build": "remix build",
