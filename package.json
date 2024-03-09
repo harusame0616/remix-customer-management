@@ -12,7 +12,7 @@
     "db:deploy:schema": "DATABASE_DIRECT_URL=\"${DATABASE_DIRECT_URL}?schema=${SCHEMA_NAME}\" pnpm run db:deploy",
     "db:deploy:production": "SCHEMA_NAME=${VERCEL_GIT_REPO_SLUG}_production pnpm run db:deploy:schema",
     "prebuild:preview": "pnpm run db:reset:preview",
-    "prebuild:production": "pnpm run db:deploy:production",
+    "prebuild:production": "pnpm prisma generate && pnpm run db:deploy:production",
     "build": "remix build",
     "dev": "remix dev --manual",
     "lint:check": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
