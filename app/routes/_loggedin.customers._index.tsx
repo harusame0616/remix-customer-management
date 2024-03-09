@@ -71,7 +71,7 @@ export default function Index() {
       </div>
       <Separator />
       <div className="flex flex-col flex-grow overflow-hidden">
-        {navigation.location ? (
+        {navigation.location?.pathname === "/customers" ? (
           <CustomerTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
         ) : (
           <Suspense
