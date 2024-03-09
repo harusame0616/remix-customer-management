@@ -43,7 +43,9 @@ export async function action({ request }: ActionFunctionArgs) {
   const actionParam = actionSchema.safeParse(await request.json());
 
   if (!actionParam.success) {
-    return json({ success: false, message: "パラマメーター" }, { status: 400 });
+    console.error(JSON.stringify(actionParam.error, null, 4));
+
+    throw new Response("パラメーターが不正です", { status: 400 });
   }
 
   try {
@@ -61,10 +63,9 @@ export async function action({ request }: ActionFunctionArgs) {
     });
     return redirect(`/deals/${dealId}`);
   } catch (e) {
-    return json(
-      { success: false, message: "取引の登録に失敗しました" },
-      { status: 500 },
-    );
+    console.error(JSON.stringify(e, null, 4));
+
+    return json({ success: false, message: "取引の登録に失敗しました" });
   }
 }
 
