@@ -21,6 +21,7 @@ export default function LoggedInLayout() {
           <Logo />
           <nav className="ml-12 flex-grow h-full">
             <ul className="flex gap-4 h-full">
+              <MenuItem label="取引" href="/deals" />
               <MenuItem label="顧客" href="/customers" />
               <MenuItem label="ユーザー" href="/users" />
             </ul>
