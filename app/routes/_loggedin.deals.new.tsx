@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { add } from "date-fns";
 import {
   ActionFunctionArgs,
   json,
@@ -73,7 +74,7 @@ const formSchema = z.object({
   deadline: z.coerce
     .date()
     .or(z.literal(""))
-    .transform((v) => (v === "" ? undefined : v)),
+    .transform((v) => (v === "" ? undefined : add(v, { hours: -9 }))),
   status: z.enum(dealStatusIds),
   url: z.string().max(DEAL_URL_MAX_LENGTH),
   attachments: z.array(
