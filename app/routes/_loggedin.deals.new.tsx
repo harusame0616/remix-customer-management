@@ -5,10 +5,11 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { useSubmit } from "@remix-run/react";
-import { ComponentProps } from "react";
 import z from "zod";
 import { Separator } from "~/components/ui/separator";
-import DealEditForm from "~/domains/deal/comopnents/deal-edit-form";
+import DealEditForm, {
+  SubmitDeal,
+} from "~/domains/deal/comopnents/deal-edit-form";
 import {
   DEAL_CONTENT_MAX_LENGTH,
   DEAL_TITLE_MAX_LENGTH,
@@ -27,7 +28,7 @@ const actionSchema = z.object({
     title: z.string().max(DEAL_TITLE_MAX_LENGTH),
     content: z.string().max(DEAL_CONTENT_MAX_LENGTH),
     deadline: z.coerce.date().or(z.undefined()),
-    status: z.enum(dealStatusIds),
+    statusId: z.enum(dealStatusIds),
     url: z.string().max(DEAL_URL_MAX_LENGTH),
   }),
 });
@@ -47,7 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
         title: actionParam.data.deal.title,
         content: actionParam.data.deal.content,
         deadline: actionParam.data.deal.deadline,
-        status: { connect: { dealStatusId: actionParam.data.deal.status } },
+        status: { connect: { dealStatusId: actionParam.data.deal.statusId } },
         url: actionParam.data.deal.url,
         platform: {
           connect: { dealPlatformId: DealPlatform.Other.dealPlatformId },
@@ -65,18 +66,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function Page() {
   const submit = useSubmit();
 
-  async function handleSubmit(
-    deal: Parameters<ComponentProps<typeof DealEditForm>["onSubmit"]>[0],
-  ) {
-    submit(
-      JSON.stringify({
-        deal,
-      }),
-      {
-        method: "POST",
-        encType: "application/json",
-      },
-    );
+  async function handleSubmit(deal: SubmitDeal) {
+    submit(JSON.stringify({ deal }), {
+      method: "POST",
+      encType: "application/json",
+    });
   }
 
   return (

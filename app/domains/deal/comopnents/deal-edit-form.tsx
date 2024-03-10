@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseFormHandleSubmit, useForm } from "react-hook-form";
-import z from "zod";
+import z, { union } from "zod";
 import { ActionCard } from "~/components/action-card";
 import { Form } from "~/components/ui/form";
-import { dealStatusIds, dealStatuses } from "~/domains/deal/enum";
+import { DealStatusId, dealStatusIds, dealStatuses } from "~/domains/deal/enum";
 import {
   FormInput,
   FormRadio,
@@ -14,30 +14,43 @@ import {
   DEAL_TITLE_MAX_LENGTH,
   DEAL_URL_MAX_LENGTH,
 } from "../constants";
+import { format } from "date-fns";
 
 const formSchema = z.object({
   title: z.string().min(1).max(DEAL_TITLE_MAX_LENGTH),
   content: z.string().max(DEAL_CONTENT_MAX_LENGTH),
   deadline: z.union([
     z.literal("").transform(() => undefined),
-    z.coerce.date(),
+    z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .transform((v) => new Date(v)),
   ]),
-  status: z.enum(dealStatusIds),
-  url: z.string().max(DEAL_URL_MAX_LENGTH),
+  statusId: z.enum(dealStatusIds),
+  url: union([z.string().url().max(DEAL_URL_MAX_LENGTH), z.literal("")]),
 });
 type FormSchema = typeof formSchema;
+export type SubmitDeal = z.output<FormSchema>;
 
 type DealEditFormProps = {
-  onSubmit: (data: z.output<FormSchema>) => Promise<void>;
+  onSubmit: (data: SubmitDeal) => Promise<void>;
+  deal?: {
+    title: string;
+    content: string;
+    deadline?: Date;
+    url: string;
+    statusId: DealStatusId;
+  };
 };
-export default function DealEditForm({ onSubmit }: DealEditFormProps) {
+
+export default function DealEditForm({ onSubmit, deal }: DealEditFormProps) {
   const form = useForm<z.input<FormSchema>>({
     defaultValues: {
-      title: "",
-      content: "",
-      deadline: "",
-      url: "",
-      status: dealStatusIds[0],
+      title: deal?.title || "",
+      content: deal?.content || "",
+      deadline: deal?.deadline ? format(deal.deadline, "yyyy-MM-dd") : "",
+      url: deal?.url || "",
+      statusId: deal?.statusId || dealStatusIds[0],
     },
     resolver: zodResolver(formSchema),
   });
@@ -50,14 +63,17 @@ export default function DealEditForm({ onSubmit }: DealEditFormProps) {
         onSubmit={
           // ShadCN が transformedValue に対応していないため強制的に型を変換
           (
-            form.handleSubmit as UseFormHandleSubmit<
+            form.handleSubmit as unknown as UseFormHandleSubmit<
               z.input<FormSchema>,
-              z.output<FormSchema>
+              SubmitDeal
             >
           )(onSubmit)
         }
       >
-        <ActionCard actionLabel="登録する" processingActonLabel="登録中です">
+        <ActionCard
+          actionLabel={deal ? "編集する" : "登録する"}
+          processingActonLabel={deal ? "編集中です" : "登録中です"}
+        >
           <FormInput
             control={form.control}
             label="タイトル"
@@ -88,7 +104,7 @@ export default function DealEditForm({ onSubmit }: DealEditFormProps) {
               label: status.label,
             }))}
             label="ステータス"
-            name="status"
+            name="statusId"
             className="max-w-28"
           />
         </ActionCard>
