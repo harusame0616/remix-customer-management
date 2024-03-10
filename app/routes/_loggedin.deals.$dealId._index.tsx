@@ -169,9 +169,9 @@ function DealDetail({ dealDetail, skeleton }: DealDetailProps) {
           取引内容
         </h3>
         <SkeletonPlaceholder isSkeleton={!!skeleton} className="h-5 w-20">
-          <section className="min-h-24 w-full whitespace-pre-wrap break-all">
+          <p className="min-h-24 w-full whitespace-pre-wrap break-all">
             {dealDetail?.content || "-"}
-          </section>
+          </p>
         </SkeletonPlaceholder>
         {!!skeleton &&
           [
