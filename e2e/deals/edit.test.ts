@@ -2,7 +2,7 @@ import { test as base, expect } from "@playwright/test";
 import { generateUniqueStr, generateUniqueURL } from "e2e/libs/str";
 import { DealDetailPage } from "e2e/libs/deal/pages/deal-detail-page";
 import { DealNewPage } from "e2e/libs/deal/pages/deal-new-page";
-import { DealStatusLabel } from "e2e/libs/deal/constants";
+import { DealPlatformLabel, DealStatusLabel } from "e2e/libs/deal/constants";
 import { DealEditPage } from "e2e/libs/deal/pages/deal-edit-page";
 
 const test = base.extend<{ dealEditPage: DealEditPage }>({
@@ -30,7 +30,9 @@ test.describe("編集できる", () => {
       expect(dealDetailPage.titleLocator).toHaveText(title),
       expect(dealDetailPage.customerLocator).toHaveText("-"),
       expect(dealDetailPage.deadlineLocator).toHaveText("-"),
-      expect(dealDetailPage.platformLocator).toHaveText("その他"),
+      expect(dealDetailPage.platformLocator).toHaveText(
+        DealPlatformLabel.Others,
+      ),
       expect(dealDetailPage.urlLocator).toHaveText("-"),
       expect(dealDetailPage.statusLocator).toHaveText(
         DealStatusLabel.UnderConsideration,
@@ -42,11 +44,19 @@ test.describe("編集できる", () => {
   test("全ての項目を入力して編集できる", async ({ dealEditPage, page }) => {
     const title = generateUniqueStr();
     const content = generateUniqueStr();
+    const platform = DealPlatformLabel.Coconala;
     const url = generateUniqueURL();
     const deadline = "2023-12-31";
     const status = DealStatusLabel.Completed;
 
-    await dealEditPage.input({ title, content, url, deadline, status });
+    await dealEditPage.input({
+      title,
+      content,
+      url,
+      deadline,
+      status,
+      platform,
+    });
     await dealEditPage.save();
 
     const dealDetailPage = new DealDetailPage(page);
@@ -56,7 +66,7 @@ test.describe("編集できる", () => {
       expect(dealDetailPage.deadlineLocator).toHaveText(
         deadline.replace(/-/g, "/"),
       ),
-      expect(dealDetailPage.platformLocator).toHaveText("その他"),
+      expect(dealDetailPage.platformLocator).toHaveText(platform),
       expect(
         dealDetailPage.urlLocator.getByRole("link", { name: url }),
       ).toBeVisible(),

@@ -148,7 +148,7 @@ export function FormRadio<Schema extends FieldValues>({
                   <FormControl>
                     <RadioGroupItem value={select.value} />
                   </FormControl>
-                  <FormLabel className="font-normal min-h-6 x cursor-pointer flex items-center">
+                  <FormLabel className="font-normal min-h-6 cursor-pointer flex items-center">
                     {select.label}
                   </FormLabel>
                 </FormItem>
