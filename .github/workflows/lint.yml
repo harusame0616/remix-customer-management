@@ -10,24 +10,27 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: チェックアウト
         uses: actions/checkout@v4
+
       - name: pnpm セットアップ
         uses: pnpm/action-setup@v3
         with:
           version: 8
-      - name: node セットアップ
+      - name: Node.js セットアップ
         uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
           cache: "pnpm"
       - name: 依存関係インストール
         run: pnpm install --frozen-lockfile
+
       - name: スキーマ生成
         run: pnpm prisma generate
-      - name: lint check
+
+      - name: lint チェック
         run: pnpm run lint:check
-      - name: format check
+      - name: format チェック
         run: pnpm run format:check
-      - name: typecheck
+      - name: type チェック
         run: pnpm run typecheck
