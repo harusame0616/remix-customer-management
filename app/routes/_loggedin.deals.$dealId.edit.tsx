@@ -18,23 +18,18 @@ import {
   DEAL_TITLE_MAX_LENGTH,
   DEAL_URL_MAX_LENGTH,
 } from "~/domains/deal/constants";
-import { DealStatusId, dealStatusIds } from "~/domains/deal/enum";
+import {
+  DealPlatformId,
+  DealStatusId,
+  dealPlatformIds,
+  dealStatusIds,
+} from "~/domains/deal/enum";
 import prisma from "~/lib/prisma";
 
 const pageTitle = "取引の編集";
 export const meta: MetaFunction = () => {
   return [{ title: `${pageTitle} - 顧客管理システム` }];
 };
-
-const actionSchema = z.object({
-  deal: z.object({
-    title: z.string().max(DEAL_TITLE_MAX_LENGTH),
-    content: z.string().max(DEAL_CONTENT_MAX_LENGTH),
-    deadline: z.coerce.date().or(z.undefined()),
-    statusId: z.enum(dealStatusIds),
-    url: z.string().max(DEAL_URL_MAX_LENGTH),
-  }),
-});
 
 export async function loader({ params }: LoaderFunctionArgs) {
   if (!params.dealId) {
@@ -55,6 +50,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
             url: true,
             deadline: true,
             statusId: true,
+            platformId: true,
           },
         })
         .then((data) => {
@@ -68,12 +64,23 @@ export async function loader({ params }: LoaderFunctionArgs) {
             url: data.url,
             deadline: data.deadline ?? undefined,
             statusId: data.statusId as DealStatusId,
+            platformId: data.platformId as DealPlatformId,
           });
         }),
     ),
   });
 }
 
+const actionSchema = z.object({
+  deal: z.object({
+    title: z.string().max(DEAL_TITLE_MAX_LENGTH),
+    content: z.string().max(DEAL_CONTENT_MAX_LENGTH),
+    deadline: z.coerce.date().or(z.undefined()),
+    statusId: z.enum(dealStatusIds),
+    platformId: z.enum(dealPlatformIds),
+    url: z.string().max(DEAL_URL_MAX_LENGTH),
+  }),
+});
 export async function action({ request, params }: ActionFunctionArgs) {
   if (!params.dealId) {
     throw new Response("Bad Request", { status: 400 });
@@ -93,6 +100,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
         content: actionParam.data.deal.content,
         deadline: actionParam.data.deal.deadline,
         status: { connect: { dealStatusId: actionParam.data.deal.statusId } },
+        platform: {
+          connect: { dealPlatformId: actionParam.data.deal.platformId },
+        },
         url: actionParam.data.deal.url,
       },
     });

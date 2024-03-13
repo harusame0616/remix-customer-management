@@ -1,9 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { UseFormHandleSubmit, useForm } from "react-hook-form";
 import z, { union } from "zod";
 import { ActionCard } from "~/components/action-card";
 import { Form } from "~/components/ui/form";
-import { DealStatusId, dealStatusIds, dealStatuses } from "~/domains/deal/enum";
+import {
+  DealPlatformId,
+  DealStatusId,
+  dealPlatformIds,
+  dealPlatforms,
+  dealStatusIds,
+  dealStatuses,
+} from "~/domains/deal/enum";
 import {
   FormInput,
   FormRadio,
@@ -14,7 +22,6 @@ import {
   DEAL_TITLE_MAX_LENGTH,
   DEAL_URL_MAX_LENGTH,
 } from "../constants";
-import { format } from "date-fns";
 
 const formSchema = z.object({
   title: z.string().min(1).max(DEAL_TITLE_MAX_LENGTH),
@@ -27,6 +34,7 @@ const formSchema = z.object({
       .transform((v) => new Date(v)),
   ]),
   statusId: z.enum(dealStatusIds),
+  platformId: z.enum(dealPlatformIds),
   url: union([z.string().url().max(DEAL_URL_MAX_LENGTH), z.literal("")]),
 });
 type FormSchema = typeof formSchema;
@@ -39,6 +47,7 @@ type DealEditFormProps = {
     content: string;
     deadline?: Date;
     url: string;
+    platformId: DealPlatformId;
     statusId: DealStatusId;
   };
 };
@@ -50,6 +59,7 @@ export default function DealEditForm({ onSubmit, deal }: DealEditFormProps) {
       content: deal?.content || "",
       deadline: deal?.deadline ? format(deal.deadline, "yyyy-MM-dd") : "",
       url: deal?.url || "",
+      platformId: deal?.platformId || dealPlatformIds[0],
       statusId: deal?.statusId || dealStatusIds[0],
     },
     resolver: zodResolver(formSchema),
@@ -96,6 +106,16 @@ export default function DealEditForm({ onSubmit, deal }: DealEditFormProps) {
             name="deadline"
             type="date"
             className="max-w-48"
+          />
+          <FormRadio
+            control={form.control}
+            selects={dealPlatforms.map((status) => ({
+              value: status.dealPlatformId,
+              label: status.label,
+            }))}
+            label="プラットフォーム"
+            name="platformId"
+            className="max-w-28"
           />
           <FormRadio
             control={form.control}

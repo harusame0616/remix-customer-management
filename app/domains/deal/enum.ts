@@ -38,6 +38,10 @@ export const dealStatusLabelMap = Object.fromEntries(
 ) as DealStatusLabelMap;
 
 export const DealPlatform = {
+  Other: {
+    dealPlatformId: "other",
+    label: "その他",
+  },
   Coconala: {
     dealPlatformId: "coconala",
     label: "coconala",
@@ -50,8 +54,10 @@ export const DealPlatform = {
     dealPlatformId: "cloud_works",
     label: "CloudWorks",
   },
-  Other: {
-    dealPlatformId: "other",
-    label: "その他",
-  },
 } as const;
+export type DealPlatformId =
+  (typeof DealPlatform)[keyof typeof DealPlatform]["dealPlatformId"];
+export const dealPlatforms = Object.values(DealPlatform);
+export const dealPlatformIds = dealPlatforms.map(
+  ({ dealPlatformId }) => dealPlatformId,
+) as [DealPlatformId, ...DealPlatformId[]];

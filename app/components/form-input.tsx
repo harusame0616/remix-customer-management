@@ -138,7 +138,7 @@ export function FormRadio<Schema extends FieldValues>({
             <RadioGroup
               onValueChange={field.onChange}
               defaultValue={field.value}
-              className="flex flex-col space-y-1"
+              className="flex flex-col gap-1"
             >
               {selects.map((select) => (
                 <FormItem
@@ -148,7 +148,9 @@ export function FormRadio<Schema extends FieldValues>({
                   <FormControl>
                     <RadioGroupItem value={select.value} />
                   </FormControl>
-                  <FormLabel className="font-normal">{select.label}</FormLabel>
+                  <FormLabel className="font-normal min-h-6 cursor-pointer flex items-center">
+                    {select.label}
+                  </FormLabel>
                 </FormItem>
               ))}
             </RadioGroup>

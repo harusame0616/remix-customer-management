@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { Status } from "../types";
+import { DealStatus, DealPlatform } from "../types";
 
 export class DealEditFormPage {
   protected readonly titleLocator;
@@ -25,18 +25,23 @@ export class DealEditFormPage {
     url,
     deadline,
     status,
+    platform,
   }: Partial<{
     title: string;
     content: string;
     url: string;
     deadline: string;
-    status: Status;
+    status: DealStatus;
+    platform: DealPlatform;
   }>) {
     if (title) {
       await this.titleLocator.fill(title);
     }
     if (content) {
       await this.contentLocator.fill(content);
+    }
+    if (platform) {
+      await this.page.getByRole("radio", { name: platform }).check();
     }
     if (url) {
       await this.urlLocator.fill(url);

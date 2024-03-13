@@ -15,7 +15,7 @@ import {
   DEAL_TITLE_MAX_LENGTH,
   DEAL_URL_MAX_LENGTH,
 } from "~/domains/deal/constants";
-import { DealPlatform, dealStatusIds } from "~/domains/deal/enum";
+import { dealPlatformIds, dealStatusIds } from "~/domains/deal/enum";
 import prisma from "~/lib/prisma";
 
 const pageTitle = "取引の新規登録";
@@ -29,6 +29,7 @@ const actionSchema = z.object({
     content: z.string().max(DEAL_CONTENT_MAX_LENGTH),
     deadline: z.coerce.date().or(z.undefined()),
     statusId: z.enum(dealStatusIds),
+    platformId: z.enum(dealPlatformIds),
     url: z.string().max(DEAL_URL_MAX_LENGTH),
   }),
 });
@@ -51,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
         status: { connect: { dealStatusId: actionParam.data.deal.statusId } },
         url: actionParam.data.deal.url,
         platform: {
-          connect: { dealPlatformId: DealPlatform.Other.dealPlatformId },
+          connect: { dealPlatformId: actionParam.data.deal.platformId },
         },
       },
     });
