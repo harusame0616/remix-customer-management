@@ -17,7 +17,7 @@ type TableProps = {
   headers: Header[];
   skeleton?: false;
   rows: Record<string, ReactNode>[];
-  sortKey: string;
+  currentSortKey: string;
   sortOrder: SortOrder;
 };
 export function Table(props: TableProps) {
@@ -29,6 +29,7 @@ export function Table(props: TableProps) {
             <HeaderItem
               key={sortKey}
               sortKey={sortKey}
+              currentSortKey={props.currentSortKey}
               label={label}
               noSort={noSort}
             />
@@ -52,9 +53,16 @@ type HeaderItemProps = {
   sortKey: string;
   label: string;
   noSort?: boolean;
+  currentSortKey: string;
 };
-function HeaderItem({ sortKey, label, noSort }: HeaderItemProps) {
-  const { changeSort, sortOrder, sortKey: currentSortKey } = useSort();
+function HeaderItem({
+  currentSortKey,
+  sortKey,
+  label,
+  noSort,
+}: HeaderItemProps) {
+  const { changeSort, sortOrder } = useSort({ defaultSortKey: currentSortKey });
+
   return (
     <TableHead>
       {noSort ? (

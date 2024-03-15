@@ -16,6 +16,7 @@ import prisma from "~/lib/prisma";
 import { SortOrder, toSortOrder } from "~/lib/table";
 import { Pagination } from "../components/pagination";
 
+const defaultSortKey = "registeredAt";
 export const meta: MetaFunction = () => {
   return [{ title: "取引一覧 - 顧客管理システム" }];
 };
@@ -59,7 +60,7 @@ export default function Index() {
   const loadData = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
-  const { sortKey, sortOrder } = useSort();
+  const { sortKey, sortOrder } = useSort({ defaultSortKey });
 
   return (
     <div className="flex flex-col h-full">
@@ -176,7 +177,7 @@ function DealTable(props: DealTableProps | DealTableSkeletonProps) {
     <Table
       rows={rows}
       headers={headers}
-      sortKey={props.sortKey}
+      currentSortKey={props.sortKey}
       sortOrder={props.sortOrder}
     />
   );

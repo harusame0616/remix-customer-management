@@ -3,14 +3,28 @@ import { SortOrder, toSortOrder } from "~/lib/table";
 
 const SORT_KEY_NAME = "sortKey";
 const SORT_ORDER_NAME = "sortOrder";
-export function useSort() {
+
+type UseSortOption = {
+  defaultSortKey?: string;
+};
+type UseSortReturn = {
+  sortKey?: string;
+  sortOrder: SortOrder;
+  changeSort: (sortKey: string) => void;
+};
+
+export function useSort(
+  option: Required<UseSortOption>,
+): Required<UseSortReturn>;
+export function useSort(option?: UseSortOption): UseSortReturn;
+export function useSort(option: UseSortOption = {}): UseSortReturn {
   const navigation = useNavigation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const sortKey =
     new URLSearchParams(navigation.location?.search).get(SORT_KEY_NAME) ||
     searchParams.get(SORT_KEY_NAME) ||
-    "fullName";
+    undefined;
   const sortOrder = toSortOrder(
     new URLSearchParams(navigation.location?.search).get(SORT_ORDER_NAME) ||
       searchParams.get(SORT_ORDER_NAME),
@@ -31,6 +45,14 @@ export function useSort() {
       return prev;
     });
   };
+
+  if (option.defaultSortKey) {
+    return {
+      sortKey: sortKey || option.defaultSortKey,
+      sortOrder,
+      changeSort,
+    };
+  }
 
   return { sortKey, sortOrder, changeSort };
 }
