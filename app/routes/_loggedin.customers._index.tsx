@@ -10,6 +10,7 @@ import { PER_PAGE, toPage } from "~/lib/pagination";
 import { SortOrder, toSortOrder } from "~/lib/table";
 import { Pagination } from "../components/pagination";
 
+const defaultSortKey = "fullName";
 export const meta: MetaFunction = () => {
   return [{ title: "顧客一覧 - 顧客管理システム" }];
 };
@@ -23,7 +24,7 @@ function isCustomerKey(
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const page = toPage(url.searchParams.get("page"));
-  const sortKey = url.searchParams.get("sortKey") ?? "fullName";
+  const sortKey = url.searchParams.get("sortKey") ?? defaultSortKey;
   const sortOrder = toSortOrder(url.searchParams.get("sortOrder"));
 
   if (!isCustomerKey(sortKey)) {
@@ -59,7 +60,7 @@ export default function Index() {
   const loadData = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
-  const { sortKey, sortOrder } = useSort();
+  const { sortKey, sortOrder } = useSort({ defaultSortKey });
 
   return (
     <div className="flex flex-col h-full">

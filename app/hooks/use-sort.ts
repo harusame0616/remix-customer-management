@@ -3,14 +3,17 @@ import { SortOrder, toSortOrder } from "~/lib/table";
 
 const SORT_KEY_NAME = "sortKey";
 const SORT_ORDER_NAME = "sortOrder";
-export function useSort() {
+type UseSortOptions = {
+  defaultSortKey: string;
+};
+export function useSort({ defaultSortKey }: UseSortOptions) {
   const navigation = useNavigation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const sortKey =
     new URLSearchParams(navigation.location?.search).get(SORT_KEY_NAME) ||
     searchParams.get(SORT_KEY_NAME) ||
-    "fullName";
+    defaultSortKey;
   const sortOrder = toSortOrder(
     new URLSearchParams(navigation.location?.search).get(SORT_ORDER_NAME) ||
       searchParams.get(SORT_ORDER_NAME),

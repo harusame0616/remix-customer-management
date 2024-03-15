@@ -8,6 +8,8 @@ import { negotiationsFixture } from "~/fixtures/negotiations";
 import { useSort } from "~/hooks/use-sort";
 import { SortOrder } from "~/lib/table";
 
+const defaultSortKey = "negotiationDate";
+
 export function loader() {
   const negotiations = negotiationsFixture.map((negotiation) => ({
     negotiationDate: negotiation.startDate,
@@ -26,7 +28,7 @@ export function loader() {
 export default function Page() {
   const loadData = useLoaderData<typeof loader>();
   const navigation = useNavigation();
-  const { sortKey, sortOrder } = useSort();
+  const { sortKey, sortOrder } = useSort({ defaultSortKey });
 
   return (
     <div className="flex flex-col h-full">

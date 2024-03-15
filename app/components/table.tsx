@@ -54,7 +54,11 @@ type HeaderItemProps = {
   noSort?: boolean;
 };
 function HeaderItem({ sortKey, label, noSort }: HeaderItemProps) {
-  const { changeSort, sortOrder, sortKey: currentSortKey } = useSort();
+  const {
+    changeSort,
+    sortOrder,
+    sortKey: currentSortKey,
+  } = useSort({ defaultSortKey: "registeredAt" });
   return (
     <TableHead>
       {noSort ? (

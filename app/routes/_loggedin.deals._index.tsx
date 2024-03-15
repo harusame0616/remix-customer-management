@@ -59,7 +59,7 @@ export default function Index() {
   const loadData = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
-  const { sortKey, sortOrder } = useSort();
+  const { sortKey, sortOrder } = useSort({ defaultSortKey });
 
   return (
     <div className="flex flex-col h-full">
