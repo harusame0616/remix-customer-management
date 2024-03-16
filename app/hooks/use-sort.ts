@@ -32,7 +32,7 @@ export function useSort(option: UseSortOption = {}): UseSortReturn {
 
   const changeSort = (sortKey: string) => {
     setSearchParams((prev) => {
-      const currentSortKey = prev.get(SORT_KEY_NAME);
+      const currentSortKey = prev.get(SORT_KEY_NAME) || option.defaultSortKey;
       const currentSortOrder = prev.get(SORT_ORDER_NAME);
       prev.set(SORT_KEY_NAME, sortKey);
       prev.set(
