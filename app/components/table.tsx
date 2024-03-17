@@ -1,5 +1,5 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
-import { ReactNode } from "react";
+import { ReactNode, useId } from "react";
 import { useSort } from "~/hooks/use-sort";
 import { SortOrder } from "~/lib/table";
 import { Button } from "./ui/button";
@@ -17,7 +17,7 @@ type TableProps = {
   headers: Header[];
   skeleton?: false;
   rows: Record<string, ReactNode>[];
-  sortKey: string;
+  currentSortKey: string;
   sortOrder: SortOrder;
 };
 export function Table(props: TableProps) {
@@ -29,6 +29,7 @@ export function Table(props: TableProps) {
             <HeaderItem
               key={sortKey}
               sortKey={sortKey}
+              currentSortKey={props.currentSortKey}
               label={label}
               noSort={noSort}
             />
@@ -52,11 +53,24 @@ type HeaderItemProps = {
   sortKey: string;
   label: string;
   noSort?: boolean;
+  currentSortKey: string;
 };
-function HeaderItem({ sortKey, label, noSort }: HeaderItemProps) {
-  const { changeSort, sortOrder, sortKey: currentSortKey } = useSort();
+function HeaderItem({
+  currentSortKey,
+  sortKey,
+  label,
+  noSort,
+}: HeaderItemProps) {
+  const { changeSort, sortOrder } = useSort({ defaultSortKey: currentSortKey });
+  const ariaSortMap = {
+    [SortOrder.Asc]: "ascending",
+    [SortOrder.Desc]: "descending",
+  } as const;
+
+  const ariaSort = currentSortKey === sortKey ? ariaSortMap[sortOrder] : "none";
+
   return (
-    <TableHead>
+    <TableHead aria-sort={ariaSort}>
       {noSort ? (
         <span>{label}</span>
       ) : (
@@ -74,9 +88,18 @@ function HeaderItem({ sortKey, label, noSort }: HeaderItemProps) {
 }
 
 function SortIcon({ sort }: { sort: SortOrder }) {
-  return sort === SortOrder.Asc ? (
-    <ChevronDownIcon className="降順" />
-  ) : (
-    <ChevronUpIcon className="昇順" />
+  const [Icon, label] =
+    sort === SortOrder.Asc
+      ? [ChevronDownIcon, "昇順"]
+      : [ChevronUpIcon, "降順"];
+  const id = useId();
+
+  return (
+    <div>
+      <Icon aria-labelledby={id} role="img" />
+      <span className="sr-only" aria-hidden id={id}>
+        {label}
+      </span>
+    </div>
   );
 }
