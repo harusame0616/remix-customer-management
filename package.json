@@ -51,6 +51,7 @@
     "prettier": "^3.2.5",
     "prisma": "^5.10.2",
     "qrcode": "^1.5.3",
+    "query-string": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
