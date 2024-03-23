@@ -24,3 +24,24 @@ test.describe("ソート", () => {
     );
   });
 });
+
+test.describe("検索", () => {
+  test("タイトルと本文からキーワード検索できる", async ({ dealListPage }) => {
+    await dealListPage.search({ keyword: "キーワード検索テスト" });
+
+    await expect(dealListPage.rows).toHaveCount(2);
+  });
+
+  test("検索で絞り込める", async ({ dealListPage }) => {
+    // すべての条件が反映されていると1件のみ検出
+    await dealListPage.search({
+      keyword: "絞り込みテスト",
+      statuses: ["完了"],
+      platforms: ["その他"],
+      from: "2022-01-01",
+      to: "2022-01-01",
+    });
+
+    await expect(dealListPage.rows).toHaveCount(1);
+  });
+});
