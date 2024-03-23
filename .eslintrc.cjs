@@ -79,5 +79,17 @@ module.exports = {
         node: true,
       },
     },
+    {
+      files: ["app/components/ui/**/*.{js,jsx,ts,tsx}"],
+      // ...
+      rules: {
+        "react/prop-types": [
+          2,
+          {
+            ignore: ["className"],
+          },
+        ],
+      },
+    },
   ],
 };
