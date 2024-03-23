@@ -1,4 +1,5 @@
-import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { useId, useState } from "react";
+import { Control, FieldValues, Path, UseFormReturn } from "react-hook-form";
 import {
   FormControl,
   FormDescription,
@@ -9,18 +10,26 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { cn } from "~/lib/utils";
+import { Checkbox } from "./ui/checkbox";
 import { Switch } from "./ui/switch";
-import { useId, useState } from "react";
 import { Textarea } from "./ui/textarea";
 
-type FormInputProps<Schema extends FieldValues> = {
-  control: UseFormReturn<Schema>["control"];
+type FormInputProps<
+  Input extends FieldValues,
+  Output extends FieldValues = Input,
+> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: Control<Input, any, Output>;
   label: string;
   description?: string;
-  name: Path<Schema>;
+  name: Path<Input>;
   required?: boolean;
 } & React.ComponentProps<typeof Input>;
-export function FormInput<Schema extends FieldValues>({
+export function FormInput<
+  Input extends FieldValues,
+  Output extends FieldValues,
+>({
   control,
   label,
   name,
@@ -28,12 +37,12 @@ export function FormInput<Schema extends FieldValues>({
   description,
   type,
   ...props
-}: FormInputProps<Schema>) {
+}: FormInputProps<Input, Output>) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   return (
     <FormField
-      control={control}
+      control={control as unknown as Control<Input>}
       name={name}
       render={({ field }) => (
         <FormItem>
@@ -155,6 +164,80 @@ export function FormRadio<Schema extends FieldValues>({
               ))}
             </RadioGroup>
           </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+type FormCheckboxProps<
+  Input extends FieldValues,
+  Output extends FieldValues = Input,
+> = FormInputProps<Input, Output> & {
+  column: number;
+  selects: { label: string; value: string }[];
+} & React.ComponentProps<typeof Input>;
+export function FormCheckbox<
+  Input extends FieldValues,
+  Output extends FieldValues = Input,
+>({
+  control,
+  selects,
+  column = 1,
+  label,
+  description,
+  name,
+}: FormCheckboxProps<Input, Output>) {
+  const columnClass = [
+    "grid-cols-1",
+    "grid-cols-2",
+    "grid-cols-3",
+    "grid-cols-4",
+    "grid-cols-5",
+    "grid-cols-6",
+  ][column - 1];
+  return (
+    <FormField
+      control={control as unknown as Control<Input>}
+      name={name}
+      render={() => (
+        <FormItem className="space-y-2">
+          <div>
+            <FormLabel>{label}</FormLabel>
+            <FormDescription>{description}</FormDescription>
+          </div>
+          <div className={cn("grid", columnClass)}>
+            {selects.map((select) => (
+              <FormField
+                key={select.value}
+                control={control as unknown as Control<Input>}
+                name={name}
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-1 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        value={select.value}
+                        checked={field.value?.includes(select.value)}
+                        onCheckedChange={(checked) => {
+                          return checked
+                            ? field.onChange([...field.value, select.value])
+                            : field.onChange(
+                                field.value?.filter(
+                                  (value: string) => value !== select.value,
+                                ),
+                              );
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel className="font-normal min-h-6 cursor-pointer flex items-center">
+                      {select.label}
+                    </FormLabel>
+                  </FormItem>
+                )}
+              ></FormField>
+            ))}
+          </div>
           <FormMessage />
         </FormItem>
       )}
