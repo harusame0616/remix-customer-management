@@ -1,14 +1,13 @@
 import { LoaderFunctionArgs, defer, type MetaFunction } from "@remix-run/node";
 import { Await, Link, useLoaderData, useNavigation } from "@remix-run/react";
 import { Suspense } from "react";
+import { ListPageLayout } from "~/components/list-page-layout";
 import { Table } from "~/components/table";
-import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { customersFixture } from "~/fixtures/customers";
 import { useSort } from "~/hooks/use-sort";
 import { PER_PAGE, toPage } from "~/lib/pagination";
 import { SortOrder, toSortOrder } from "~/lib/table";
-import { Pagination } from "../components/pagination";
 
 const defaultSortKey = "fullName";
 export const meta: MetaFunction = () => {
@@ -28,7 +27,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const sortOrder = toSortOrder(url.searchParams.get("sortOrder"));
 
   if (!isCustomerKey(sortKey)) {
-    return new Response("Invalid sort key", { status: 400 });
+    throw new Response("Invalid sort key", { status: 400 });
   }
 
   const offset = (page - 1) * PER_PAGE;
@@ -56,51 +55,42 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-export default function Index() {
+export default function Page() {
   const loadData = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
   const { sortKey, sortOrder } = useSort({ defaultSortKey });
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-2 md:px-4 flex">
-        <h1>顧客一覧</h1>
-        <div className="flex-grow flex justify-end">
-          <Link to="/customers/new">新規登録</Link>
-        </div>
-      </div>
-      <Separator />
-      <div className="flex flex-col flex-grow overflow-hidden">
-        {navigation.location?.pathname === "/customers" ? (
-          <CustomerTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
-        ) : (
-          <Suspense
-            fallback={
-              <CustomerTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
-            }
-          >
-            <Await resolve={loadData.customers}>
-              {(resolvedValue) => (
-                <CustomerTable
-                  customers={resolvedValue}
-                  sortKey={sortKey}
-                  sortOrder={sortOrder}
-                />
-              )}
-            </Await>
-          </Suspense>
-        )}
-      </div>
-      <Separator />
-      <Suspense>
-        <Await resolve={loadData.totalCount}>
-          {(totalCount) => (
-            <Pagination totalCount={totalCount} className="md:px-4" />
-          )}
-        </Await>
-      </Suspense>
-    </div>
+    <ListPageLayout
+      title="顧客一覧"
+      totalCount={loadData.totalCount}
+      toolbarItems={[
+        <Link to="/customers/new" key="register">
+          新規登録
+        </Link>,
+      ]}
+    >
+      {navigation.location?.pathname === "/customers" ? (
+        <CustomerTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
+      ) : (
+        <Suspense
+          fallback={
+            <CustomerTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
+          }
+        >
+          <Await resolve={loadData.customers}>
+            {(resolvedValue) => (
+              <CustomerTable
+                customers={resolvedValue}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+              />
+            )}
+          </Await>
+        </Suspense>
+      )}
+    </ListPageLayout>
   );
 }
 

@@ -17,9 +17,9 @@ import { ReactNode, Suspense } from "react";
 import { DefaultValues, FormProvider, useForm } from "react-hook-form";
 import z from "zod";
 import { FormCheckbox, FormInput } from "~/components/form-input";
+import { ListPageLayout } from "~/components/list-page-layout";
 import { SearchDrawer } from "~/components/search-drawer";
 import { Table } from "~/components/table";
-import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
   DealPlatform,
@@ -35,7 +35,6 @@ import { PER_PAGE } from "~/lib/pagination";
 import prisma from "~/lib/prisma";
 import { safeParseQueryString } from "~/lib/search-params";
 import { SortOrder } from "~/lib/table";
-import { Pagination } from "../components/pagination";
 
 const defaultSortKey = "registeredAt";
 export const meta: MetaFunction = () => {
@@ -165,7 +164,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-export default function Index() {
+export default function Page() {
   const loadData = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
@@ -176,52 +175,41 @@ export default function Index() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-2 md:px-4 flex">
-        <h1>顧客一覧</h1>
-        <div className="flex-grow flex justify-end gap-2 items-center">
-          <DealSearchDrawer />
-          <Link to="/deals/new">新規登録</Link>
-        </div>
-      </div>
-      <Separator />
-      <div className="flex flex-col flex-grow overflow-hidden">
-        {navigation.location?.pathname === "/deals" ? (
-          <DealTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
-        ) : (
-          <Suspense
-            fallback={
-              <DealTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
-            }
-          >
-            <Await resolve={loadData.deals}>
-              {(deals) => (
-                <DealTable
-                  deals={deals.map((deal) => ({
-                    ...deal,
-                    deadline: deal.deadline
-                      ? new Date(deal.deadline)
-                      : undefined,
-                    editedAt: new Date(deal.editedAt),
-                    registeredAt: new Date(deal.registeredAt),
-                  }))}
-                  sortKey={sortKey}
-                  sortOrder={sortOrder}
-                />
-              )}
-            </Await>
-          </Suspense>
-        )}
-      </div>
-      <Separator />
-      <Suspense>
-        <Await resolve={loadData.totalCount}>
-          {(totalCount) => (
-            <Pagination totalCount={totalCount} className="md:px-4" />
-          )}
-        </Await>
-      </Suspense>
-    </div>
+    <ListPageLayout
+      title="取引一覧"
+      toolbarItems={[
+        <DealSearchDrawer key="search" />,
+        <Link to="/deals/new" key="register">
+          新規登録
+        </Link>,
+      ]}
+      totalCount={loadData.totalCount}
+    >
+      {navigation.location?.pathname === "/deals" ? (
+        <DealTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
+      ) : (
+        <Suspense
+          fallback={
+            <DealTable sortKey={sortKey} sortOrder={sortOrder} skeleton />
+          }
+        >
+          <Await resolve={loadData.deals}>
+            {(deals) => (
+              <DealTable
+                deals={deals.map((deal) => ({
+                  ...deal,
+                  deadline: deal.deadline ? new Date(deal.deadline) : undefined,
+                  editedAt: new Date(deal.editedAt),
+                  registeredAt: new Date(deal.registeredAt),
+                }))}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+              />
+            )}
+          </Await>
+        </Suspense>
+      )}
+    </ListPageLayout>
   );
 }
 
