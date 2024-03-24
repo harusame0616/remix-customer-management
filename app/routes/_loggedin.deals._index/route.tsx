@@ -91,7 +91,6 @@ type getDealsCondition = {
   };
 };
 function getDeals({ sortKey, sortOrder, page, condition }: getDealsCondition) {
-  console.log({ condition });
   return new Promise<DealListItem[]>((resolve) => {
     prisma.deal
       .findMany({
@@ -150,13 +149,11 @@ function getDealsTotalCount() {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const loaderParams = parseGetDealsSearchParams(new URL(request.url));
-  console.log(loaderParams);
   if (!loaderParams.success) {
     return json(loaderParams);
   }
 
   const { sortKey, sortOrder, page, ...condition } = loaderParams.data;
-  console.log({ sortKey, sortOrder, page, condition });
   return defer({
     success: true,
     deals: getDeals({ sortKey, page, sortOrder, condition }),

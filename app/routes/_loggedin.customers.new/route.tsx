@@ -6,7 +6,7 @@ import z from "zod";
 import { ActionCard } from "~/components/action-card";
 import { Form } from "~/components/ui/form";
 import { Separator } from "~/components/ui/separator";
-import { FormInput, FormRadio } from "../components/form-input";
+import { FormInput, FormRadio } from "../../components/form-input";
 
 export const meta: MetaFunction = () => {
   return [{ title: "顧客の新規登録 - 顧客管理システム" }];
