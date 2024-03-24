@@ -1,7 +1,10 @@
+import { createDealFixtures } from "e2e/deals/fixtures";
 import { DealPlatform, DealStatus } from "~/domains/deal/enum";
 import prisma from "~/lib/prisma";
 
 async function main() {
+  await prisma.deal.deleteMany();
+
   await Promise.all([
     prisma.dealStatus.deleteMany(),
     prisma.dealPlatform.deleteMany(),
@@ -15,6 +18,10 @@ async function main() {
       data: Object.values(DealPlatform),
     }),
   ]);
+
+  await prisma.deal.createMany({
+    data: createDealFixtures(),
+  });
 }
 
 main()
