@@ -7,7 +7,7 @@ import {
   toHyphenPhoneNumber,
   toHyphenMobilePhoneNumber,
   toHyphenPostNumber,
-} from "../domains/customer/libs/converter";
+} from "../../domains/customer/libs/converter";
 
 export async function loader() {
   const customer = customersFixture[0];

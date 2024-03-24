@@ -102,6 +102,5 @@ const dealSources: Prisma.DealCreateManyInput[] = [
 ];
 
 export function createDealFixtures() {
-  console.log("create fixtures");
   return [...dealSources];
 }
