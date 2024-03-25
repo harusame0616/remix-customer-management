@@ -1,57 +1,53 @@
-import { LoaderFunctionArgs, defer, type MetaFunction } from "@remix-run/node";
+import {
+  defer,
+  json,
+  LoaderFunctionArgs,
+  type MetaFunction,
+} from "@remix-run/node";
 import { Await, Link, useLoaderData, useNavigation } from "@remix-run/react";
 import { Suspense } from "react";
+import { z } from "zod";
 import { ListPageLayout } from "~/components/list-page-layout";
 import { Table } from "~/components/table";
 import { Skeleton } from "~/components/ui/skeleton";
-import { customersFixture } from "~/fixtures/customers";
 import { useSort } from "~/hooks/use-sort";
-import { PER_PAGE, toPage } from "~/lib/pagination";
-import { SortOrder, toSortOrder } from "~/lib/table";
+import { safeParseQueryString } from "~/lib/search-params";
+import { SortOrder } from "~/lib/table";
+import { getCustomers, getCustomerTotalCount } from "./data";
 
-const defaultSortKey = "fullName";
+const defaultSortKey = "name";
 export const meta: MetaFunction = () => {
   return [{ title: "顧客一覧 - 顧客管理システム" }];
 };
 
-function isCustomerKey(
-  key: string,
-): key is keyof (typeof customersFixture)[number] {
-  return key in customersFixture[0];
+function parseGetSearchParams(source: string | URL) {
+  const queryString = source instanceof URL ? source.search : source.toString();
+
+  return safeParseQueryString(
+    queryString,
+    z.object({
+      page: z.coerce.number().optional().default(1),
+      sortKey: z.string().optional().default(defaultSortKey),
+      sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
+    }),
+  );
 }
-
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const page = toPage(url.searchParams.get("page"));
-  const sortKey = url.searchParams.get("sortKey") ?? defaultSortKey;
-  const sortOrder = toSortOrder(url.searchParams.get("sortOrder"));
+  const loaderParams = parseGetSearchParams(new URL(request.url));
 
-  if (!isCustomerKey(sortKey)) {
-    throw new Response("Invalid sort key", { status: 400 });
+  if (!loaderParams.success) {
+    return json(loaderParams);
   }
 
-  const offset = (page - 1) * PER_PAGE;
-  const customers = customersFixture
-    .slice()
-    .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return `${a[sortKey]}`.localeCompare(`${b[sortKey]}`);
-      } else if (sortOrder === "desc") {
-        return `${b[sortKey]}`.localeCompare(`${a[sortKey]}`);
-      } else {
-        throw new Error("Invalid sort order");
-      }
-    })
-    .slice(offset, offset + PER_PAGE)
-    .map((customer) => ({ ...customer, note: "" }));
-
   return defer({
-    customers: new Promise<typeof customers>((r) =>
-      setTimeout(() => r(customers), 1000),
-    ),
-    totalCount: new Promise<number>((r) =>
-      setTimeout(() => r(customersFixture.length), 200),
-    ),
+    success: true,
+    customers: getCustomers({
+      sortKey: loaderParams.data.sortKey,
+      sortOrder: loaderParams.data.sortOrder,
+      page: loaderParams.data.page,
+      condition: {},
+    }),
+    totalCount: getCustomerTotalCount({ condition: {} }),
   });
 };
 
@@ -60,6 +56,10 @@ export default function Page() {
 
   const navigation = useNavigation();
   const { sortKey, sortOrder } = useSort({ defaultSortKey });
+
+  if (!loadData.success) {
+    return <div>error</div>;
+  }
 
   return (
     <ListPageLayout
@@ -80,9 +80,9 @@ export default function Page() {
           }
         >
           <Await resolve={loadData.customers}>
-            {(resolvedValue) => (
+            {(customers) => (
               <CustomerTable
-                customers={resolvedValue}
+                customers={customers}
                 sortKey={sortKey}
                 sortOrder={sortOrder}
               />
@@ -95,28 +95,24 @@ export default function Page() {
 }
 
 type Customer = {
-  fullName: string;
-  fullNameKana: string;
-  age: number;
-  birthday: string;
+  name: string;
+  nameKana: string;
   sex: string;
-  blood: string;
+  birthday?: string;
+  phone: string;
   email: string;
-  phoneNumber: string;
-  mobilePhoneNumber: string;
-  postNumber: string;
+  mobilePhone: string;
+  postCode: string;
   address: string;
-  company: string;
   note: string;
 };
 
 const headers = [
   { sortKey: "detailLink", label: "詳細", noSort: true },
-  { sortKey: "fullName", label: "名前" },
+  { sortKey: "name", label: "名前" },
   { sortKey: "address", label: "住所" },
-  { sortKey: "phoneNumber", label: "電話番号" },
+  { sortKey: "phone", label: "電話番号" },
   { sortKey: "email", label: "メール" },
-  { sortKey: "note", label: "備考" },
 ];
 type CustomerTableProps = {
   skeleton?: false;
@@ -134,16 +130,29 @@ function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
     ? Array.from({ length: 10 }).map(() => {
         return {
           detailLink: <Skeleton className="h-4 w-8" />,
-          fullName: <Skeleton className="h-4 w-20" />,
+          name: <Skeleton className="h-4 w-20" />,
           address: <Skeleton className="h-4 w-40" />,
           phoneNumber: <Skeleton className="h-4 w-20" />,
           email: <Skeleton className="h-4 w-32" />,
-          note: <Skeleton className="h-4 w-4" />,
         };
       })
     : props.customers.map((customer) => ({
         ...customer,
-        detailLink: <Link to={`/customers/${customer.fullName}`}>詳細</Link>,
+        email: customer.email ? (
+          <a href={`mailto:${customer.email}`}>{customer.email}</a>
+        ) : (
+          "-"
+        ),
+        phone: customer.phone ? (
+          <a href={`tel:${customer.phone}`}>{customer.phone}</a>
+        ) : (
+          "-"
+        ),
+        detailLink: customer.name ? (
+          <Link to={`/customers/${customer.name}`}>詳細</Link>
+        ) : (
+          "-"
+        ),
       }));
 
   return (
