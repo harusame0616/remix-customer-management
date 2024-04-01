@@ -1,15 +1,17 @@
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { PropsWithChildren } from "react";
+import { useIsSubmitting } from "~/hooks/use-is-loading";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Separator } from "./ui/separator";
-import { useIsSubmitting } from "~/hooks/use-is-loading";
-import { ReloadIcon } from "@radix-ui/react-icons";
 
 type ActionCardProps = PropsWithChildren<{
+  title?: React.ReactNode;
   actionLabel: string;
   processingActonLabel: string;
 }>;
 export function ActionCard({
+  title,
   actionLabel,
   children,
   processingActonLabel,
@@ -17,8 +19,9 @@ export function ActionCard({
   const isSubmitting = useIsSubmitting();
 
   return (
-    <Card className="p-8 space-y-8">
-      <div className="space-y-8">{children}</div>
+    <Card className="p-8 space-y-4">
+      {title}
+      <div className="space-y-4">{children}</div>
       <Separator />
       <Button
         className="w-full aria-disabled:opacity-50 aria-disabled:pointer-event-none aria-disabled:cursor-default"
