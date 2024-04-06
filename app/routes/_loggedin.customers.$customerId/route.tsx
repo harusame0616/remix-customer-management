@@ -1,29 +1,22 @@
 import { Separator } from "@radix-ui/react-separator";
-import { defer } from "@remix-run/node";
 import { Await, Outlet, useLoaderData, useParams } from "@remix-run/react";
 import { Suspense } from "react";
 import { LinkTabs } from "~/components/link-tabs";
 import { Skeleton } from "~/components/ui/skeleton";
+import { type Loader } from "./controllers";
+export { loader } from "./controllers";
 
-export async function loader() {
-  return defer({
-    success: true,
-    fullName: new Promise<string>((resolve) =>
-      setTimeout(() => resolve("山田 太郎"), 1000),
-    ),
-  });
-}
 export default function Page() {
-  const loadData = useLoaderData<typeof loader>();
+  const loadData = useLoaderData<Loader>();
   const param = useParams();
-
-  if (!param.customerId) {
-    return <div>error</div>;
-  }
 
   const customerId = param.customerId;
   const links = [
-    { to: `/customers/${customerId}`, label: "プロフィール", end: true },
+    {
+      to: `/customers/${customerId}`,
+      label: "プロフィール",
+      end: true,
+    },
     { to: `/customers/${customerId}/negotiations`, label: "商談", end: true },
   ];
 
@@ -34,9 +27,7 @@ export default function Page() {
           <span>顧客詳細</span>
           <span className="text-xl font-bold text-foreground -mb-px">
             <Suspense fallback={<Skeleton className="h-7 w-20" />}>
-              <Await resolve={loadData.fullName}>
-                {(fullName) => fullName}
-              </Await>
+              <Await resolve={loadData.customer}>{({ name }) => name}</Await>
             </Suspense>
           </span>
           <span>様</span>

@@ -14,7 +14,7 @@ export type CustomerDto = {
   name: string;
   nameKana: string;
   sex: Sex;
-  birthday: Date | null;
+  birthday: string | null;
   phone: string;
   mobilePhone: string;
   postCode: string;
@@ -22,7 +22,7 @@ export type CustomerDto = {
   url: string;
   email: string;
   note: string;
-  registeredAt: Date;
+  registeredAt: string;
 };
 
 export type CustomerCreateParams = Omit<
@@ -40,7 +40,7 @@ export class Customer {
   static create(params: CustomerCreateParams) {
     return new Customer({
       ...params,
-      registeredAt: new Date(),
+      registeredAt: new Date().toISOString(),
       customerId: generateId(),
     });
   }

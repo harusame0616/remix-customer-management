@@ -6,6 +6,7 @@ export type SexLabel = (typeof SexLabels)[number];
 
 export class CustomerNewPage {
   static readonly PATH = "/customers/new";
+  static readonly NO_INPUT_TEXT = "入力なし";
 
   protected readonly nameLocator;
   protected readonly nameKanaLocator;
