@@ -7,8 +7,9 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { CustomerDto } from "~/domains/customer/models/customer";
 import { useSort } from "~/hooks/use-sort";
 import { SortOrder } from "~/lib/table";
-import { DEFAULT_SORT_KEY } from "./constants";
+import { DEFAULT_SORT_KEY } from "./search";
 import { Loader } from "./controllers";
+import { CustomerSearchDrawer } from "./customer-search-drawer";
 export { loader } from "./controllers";
 
 export const meta: MetaFunction = () => {
@@ -30,6 +31,7 @@ export default function Page() {
       title="顧客一覧"
       totalCount={loadData.totalCount}
       toolbarItems={[
+        <CustomerSearchDrawer key="search" />,
         <Link to="/customers/new" key="register">
           新規登録
         </Link>,
