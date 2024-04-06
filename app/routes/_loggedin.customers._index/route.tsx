@@ -1,61 +1,25 @@
-import {
-  defer,
-  json,
-  LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/node";
+import { type MetaFunction } from "@remix-run/node";
 import { Await, Link, useLoaderData, useNavigation } from "@remix-run/react";
 import { Suspense } from "react";
-import { z } from "zod";
 import { ListPageLayout } from "~/components/list-page-layout";
 import { Table } from "~/components/table";
 import { Skeleton } from "~/components/ui/skeleton";
+import { CustomerDto } from "~/domains/customer/models/customer";
 import { useSort } from "~/hooks/use-sort";
-import { safeParseQueryString } from "~/lib/search-params";
 import { SortOrder } from "~/lib/table";
-import { getCustomers, getCustomerTotalCount } from "./data";
+import { DEFAULT_SORT_KEY } from "./constants";
+import { Loader } from "./controllers";
+export { loader } from "./controllers";
 
-const defaultSortKey = "name";
 export const meta: MetaFunction = () => {
   return [{ title: "顧客一覧 - 顧客管理システム" }];
 };
 
-function parseGetSearchParams(source: string | URL) {
-  const queryString = source instanceof URL ? source.search : source.toString();
-
-  return safeParseQueryString(
-    queryString,
-    z.object({
-      page: z.coerce.number().optional().default(1),
-      sortKey: z.string().optional().default(defaultSortKey),
-      sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
-    }),
-  );
-}
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const loaderParams = parseGetSearchParams(new URL(request.url));
-
-  if (!loaderParams.success) {
-    return json(loaderParams);
-  }
-
-  return defer({
-    success: true,
-    customers: getCustomers({
-      sortKey: loaderParams.data.sortKey,
-      sortOrder: loaderParams.data.sortOrder,
-      page: loaderParams.data.page,
-      condition: {},
-    }),
-    totalCount: getCustomerTotalCount({ condition: {} }),
-  });
-};
-
 export default function Page() {
-  const loadData = useLoaderData<typeof loader>();
+  const loadData = useLoaderData<Loader>();
 
   const navigation = useNavigation();
-  const { sortKey, sortOrder } = useSort({ defaultSortKey });
+  const { sortKey, sortOrder } = useSort({ defaultSortKey: DEFAULT_SORT_KEY });
 
   if (!loadData.success) {
     return <div>error</div>;
@@ -94,19 +58,6 @@ export default function Page() {
   );
 }
 
-type Customer = {
-  name: string;
-  nameKana: string;
-  sex: string;
-  birthday?: string;
-  phone: string;
-  email: string;
-  mobilePhone: string;
-  postCode: string;
-  address: string;
-  note: string;
-};
-
 const headers = [
   { sortKey: "detailLink", label: "詳細", noSort: true },
   { sortKey: "name", label: "名前" },
@@ -116,7 +67,10 @@ const headers = [
 ];
 type CustomerTableProps = {
   skeleton?: false;
-  customers: Customer[];
+  customers: Pick<
+    CustomerDto,
+    "customerId" | "name" | "address" | "phone" | "email"
+  >[];
   sortKey: string;
   sortOrder: SortOrder;
 };
@@ -149,7 +103,7 @@ function CustomerTable(props: CustomerTableProps | CustomerTableSkeletonProps) {
           "-"
         ),
         detailLink: customer.name ? (
-          <Link to={`/customers/${customer.name}`}>詳細</Link>
+          <Link to={`/customers/${customer.customerId}`}>詳細</Link>
         ) : (
           "-"
         ),

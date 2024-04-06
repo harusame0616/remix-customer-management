@@ -2,18 +2,18 @@ import { PER_PAGE } from "~/lib/pagination";
 import prisma from "~/lib/prisma";
 import { SortOrder } from "~/lib/table";
 
-type GetCustomersArg = {
+type QueryCustomersArg = {
   sortKey: string;
   sortOrder: SortOrder;
   page: number;
   condition: Record<string, unknown>;
 };
-export async function getCustomers({
+export async function queryCustomers({
   sortKey,
   sortOrder,
   page,
   condition,
-}: GetCustomersArg) {
+}: QueryCustomersArg) {
   const customers = await prisma.customer.findMany({
     orderBy: {
       [sortKey]: sortOrder,
@@ -29,11 +29,11 @@ export async function getCustomers({
   }));
 }
 
-type GetCustomersTotalCountArg = {
+type QueryCustomerTotalCountArg = {
   condition: Record<string, unknown>;
 };
-export async function getCustomerTotalCount({
+export async function queryCustomerTotalCount({
   condition,
-}: GetCustomersTotalCountArg) {
+}: QueryCustomerTotalCountArg) {
   return await prisma.customer.count({ where: condition });
 }
