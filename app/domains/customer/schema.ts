@@ -20,8 +20,16 @@ export function birthdaySchema() {
       .string()
       .datetime({ offset: true })
       .transform((isoTimestamp) => new Date(isoTimestamp))
-      .pipe(z.date().max(new Date("9999-12-31T23:59:59+09:00"))),
-    z.date().max(new Date("9999-12-31T23:59:59+09:00")),
+      .pipe(
+        z
+          .date()
+          .max(new Date("9999-12-31T23:59:59+09:00"))
+          .transform((d) => d.toISOString()),
+      ),
+    z
+      .date()
+      .max(new Date("9999-12-31T23:59:59+09:00"))
+      .transform((d) => d.toISOString()),
   ]);
 }
 

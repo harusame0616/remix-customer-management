@@ -26,14 +26,46 @@ const test = base.extend<{ customerNewPage: CustomerNewPage }>({
 });
 
 test.describe("登録できる", () => {
-  test("未入力で登録できる", async ({ page, customerNewPage }) => {
-    await customerNewPage.register();
+  test("未入力で登録できる", async ({ customerNewPage }) => {
+    const customerDetailPage = await customerNewPage.register();
 
-    expect(page).toHaveURL(CustomerDetailPage.PATH_PATTERN);
-    // TODO: 正しい値で登録されていることを確認
+    await expect(customerDetailPage.nameLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.nameKanaLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.sexLocator).toHaveText("その他");
+    await expect(customerDetailPage.birthdayLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.emailLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.phoneLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.mobilePhoneLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.urlLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.postCodeLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.addressLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.noteLocator).toHaveText(
+      CustomerDetailPage.NO_INPUT_TEXT,
+    );
+    await expect(customerDetailPage.registeredAtLocator).toHaveText(
+      /\d{4}-\d{2}-\d{2} \d{2}:\d{2}/,
+    );
   });
 
-  test("全ての項目を入力して登録できる", async ({ customerNewPage, page }) => {
+  test("全ての項目を入力して登録できる", async ({ customerNewPage }) => {
     const name = generateUniqueStr(CUSTOMER_NAME_MAX_LENGTH);
     const nameKana = generateUniqueStr(CUSTOMER_NAME_KANA_MAX_LENGTH);
     const sex: SexLabel = "男性";
@@ -46,7 +78,7 @@ test.describe("登録できる", () => {
     const note = generateUniqueStr(CUSTOMER_NOTE_MAX_LENGTH);
     const postCode = "000-0000";
 
-    await customerNewPage.register({
+    const customerDetailPage = await customerNewPage.register({
       name,
       nameKana,
       sex,
@@ -60,7 +92,19 @@ test.describe("登録できる", () => {
       postCode,
     });
 
-    await expect(page).toHaveURL(CustomerDetailPage.PATH_PATTERN);
-    // TODO: 正しい値で登録されていることを確認
+    await expect(customerDetailPage.nameLocator).toHaveText(name);
+    await expect(customerDetailPage.nameKanaLocator).toHaveText(nameKana);
+    await expect(customerDetailPage.sexLocator).toHaveText(sex);
+    await expect(customerDetailPage.birthdayLocator).toHaveText(birthday);
+    await expect(customerDetailPage.emailLocator).toHaveText(email);
+    await expect(customerDetailPage.phoneLocator).toHaveText(phone);
+    await expect(customerDetailPage.mobilePhoneLocator).toHaveText(mobilePhone);
+    await expect(customerDetailPage.urlLocator).toHaveText(url);
+    await expect(customerDetailPage.postCodeLocator).toHaveText(postCode);
+    await expect(customerDetailPage.addressLocator).toHaveText(address);
+    await expect(customerDetailPage.noteLocator).toHaveText(note);
+    await expect(customerDetailPage.registeredAtLocator).toHaveText(
+      /\d{4}-\d{2}-\d{2} \d{2}:\d{2}/,
+    );
   });
 });
