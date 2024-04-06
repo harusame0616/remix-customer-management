@@ -2,6 +2,7 @@ import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import { Skeleton } from "~/components/ui/skeleton";
 import { CustomerDto } from "~/domains/customer/models/customer";
+import { useClientDate } from "~/hooks/use-client-date";
 import { formatToDate, formatToDateTime } from "~/lib/date";
 import { sexToLabel } from "~/lib/sex";
 import {
@@ -38,6 +39,10 @@ type ProfileProps =
       skeleton?: false;
     };
 function Profile(props: ProfileProps) {
+  const registeredAt = useClientDate(
+    !props.skeleton ? props.customer.registeredAt : "",
+  );
+
   const items: {
     label: string;
     value: React.ReactNode;
@@ -107,7 +112,10 @@ function Profile(props: ProfileProps) {
         { label: "ノート", value: props.customer.note },
         {
           label: "登録日時",
-          value: formatToDateTime(props.customer.registeredAt),
+          // value: registeredAt ? formatToDateTime(registeredAt) : undefined,
+          value: registeredAt
+            ? formatToDateTime(props.customer.registeredAt)
+            : undefined,
         },
       ];
 
