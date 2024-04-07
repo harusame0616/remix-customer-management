@@ -2,11 +2,28 @@ import { PER_PAGE } from "~/lib/pagination";
 import prisma from "~/lib/prisma";
 import { SortOrder } from "~/lib/table";
 
+type Condition = {
+  keyword?: string;
+};
+
+function createWhere(condition: Condition) {
+  return {
+    OR: condition.keyword
+      ? [
+          { name: { contains: condition.keyword } },
+          { nameKana: { contains: condition.keyword } },
+          { address: { contains: condition.keyword } },
+          { note: { contains: condition.keyword } },
+        ]
+      : undefined,
+  };
+}
+
 type QueryCustomersArg = {
   sortKey: string;
   sortOrder: SortOrder;
   page: number;
-  condition: Record<string, unknown>;
+  condition: Condition;
 };
 export async function queryCustomers({
   sortKey,
@@ -18,7 +35,7 @@ export async function queryCustomers({
     orderBy: {
       [sortKey]: sortOrder,
     },
-    where: condition,
+    where: createWhere(condition),
     take: PER_PAGE,
     skip: (page - 1) * PER_PAGE,
   });
@@ -30,10 +47,12 @@ export async function queryCustomers({
 }
 
 type QueryCustomerTotalCountArg = {
-  condition: Record<string, unknown>;
+  condition: Condition;
 };
 export async function queryCustomerTotalCount({
   condition,
 }: QueryCustomerTotalCountArg) {
-  return await prisma.customer.count({ where: condition });
+  return await prisma.customer.count({
+    where: createWhere(condition),
+  });
 }
