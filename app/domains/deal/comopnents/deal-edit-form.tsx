@@ -22,6 +22,10 @@ import {
   DEAL_TITLE_MAX_LENGTH,
   DEAL_URL_MAX_LENGTH,
 } from "../constants";
+import { Separator } from "~/components/ui/separator";
+import { CustomerSelectDialog } from "~/components/customer-select-dialog";
+import { CustomerDto } from "~/domains/customer/models/customer";
+import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(1).max(DEAL_TITLE_MAX_LENGTH),
@@ -36,6 +40,7 @@ const formSchema = z.object({
   statusId: z.enum(dealStatusIds),
   platformId: z.enum(dealPlatformIds),
   url: union([z.string().url().max(DEAL_URL_MAX_LENGTH), z.literal("")]),
+  customerId: union([z.literal("").transform(() => undefined), z.string()]),
 });
 type FormSchema = typeof formSchema;
 export type SubmitDeal = z.output<FormSchema>;
@@ -49,10 +54,18 @@ type DealEditFormProps = {
     url: string;
     platformId: DealPlatformId;
     statusId: DealStatusId;
+    customer?: Pick<CustomerDto, "customerId" | "name">;
   };
 };
 
 export default function DealEditForm({ onSubmit, deal }: DealEditFormProps) {
+  const [customer, setCustomer] = useState<
+    | {
+        customerId: string;
+        name: string;
+      }
+    | undefined
+  >(deal?.customer);
   const form = useForm<z.input<FormSchema>>({
     defaultValues: {
       title: deal?.title || "",
@@ -61,6 +74,7 @@ export default function DealEditForm({ onSubmit, deal }: DealEditFormProps) {
       url: deal?.url || "",
       platformId: deal?.platformId || dealPlatformIds[0],
       statusId: deal?.statusId || dealStatusIds[0],
+      customerId: deal?.customer?.customerId || "",
     },
     resolver: zodResolver(formSchema),
   });
@@ -127,6 +141,25 @@ export default function DealEditForm({ onSubmit, deal }: DealEditFormProps) {
             name="statusId"
             className="max-w-28"
           />
+          <Separator />
+          <div className="flex flex-col gap-2">
+            <div>
+              顧客：
+              {customer?.name === undefined
+                ? "未選択"
+                : customer.name || "（名前未設定）"}
+            </div>
+            <div>
+              <CustomerSelectDialog
+                onSelect={function (
+                  customer: Pick<CustomerDto, "customerId" | "name">,
+                ): void {
+                  form.setValue("customerId", customer.customerId);
+                  setCustomer(customer);
+                }}
+              />
+            </div>
+          </div>
         </ActionCard>
       </form>
     </Form>

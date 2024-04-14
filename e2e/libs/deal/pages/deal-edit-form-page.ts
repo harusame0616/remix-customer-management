@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import { DealStatus, DealPlatform } from "../types";
+import { DealDetailPage } from "./deal-detail-page";
 
 export class DealEditFormPage {
   protected readonly titleLocator;
@@ -60,5 +61,22 @@ export class DealEditFormPage {
 
   async save() {
     await this.submitButtonLocator.click();
+    const dealDetailPage = new DealDetailPage(this.page);
+    await dealDetailPage.wait();
+    return dealDetailPage;
+  }
+
+  async searchCustomer(keyword: string) {
+    await this.page.getByRole("button", { name: "顧客を選択" }).click();
+    await this.page.getByRole("textbox", { name: "キーワード" }).fill(keyword);
+    await this.page.getByRole("button", { name: "検索" }).click();
+  }
+
+  async selectCustomerByName(name: string) {
+    await this.page
+      .getByRole("row")
+      .filter({ hasText: name })
+      .getByRole("button", { name: "選択" })
+      .click();
   }
 }

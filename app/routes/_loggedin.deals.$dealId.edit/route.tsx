@@ -51,6 +51,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
             deadline: true,
             statusId: true,
             platformId: true,
+            customer: { select: { customerId: true, name: true } },
           },
         })
         .then((data) => {
@@ -65,6 +66,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
             deadline: data.deadline ?? undefined,
             statusId: data.statusId as DealStatusId,
             platformId: data.platformId as DealPlatformId,
+            customer: data.customer ?? undefined,
           });
         }),
     ),
@@ -79,6 +81,7 @@ const actionSchema = z.object({
     statusId: z.enum(dealStatusIds),
     platformId: z.enum(dealPlatformIds),
     url: z.string().max(DEAL_URL_MAX_LENGTH),
+    customerId: z.string().optional(),
   }),
 });
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -104,6 +107,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
           connect: { dealPlatformId: actionParam.data.deal.platformId },
         },
         url: actionParam.data.deal.url,
+        customer: { connect: { customerId: actionParam.data.deal.customerId } },
       },
     });
 

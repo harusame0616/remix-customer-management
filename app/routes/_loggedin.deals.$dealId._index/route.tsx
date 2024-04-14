@@ -5,7 +5,7 @@ import {
   ExternalLinkIcon,
   PersonIcon,
 } from "@radix-ui/react-icons";
-import { LoaderFunctionArgs, defer } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction, defer } from "@remix-run/node";
 import { Await, Link, useLoaderData, useParams } from "@remix-run/react";
 import { format } from "date-fns";
 import { Suspense, useId } from "react";
@@ -16,6 +16,8 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { DealStatusId, dealStatusLabelMap } from "~/domains/deal/enum";
 import prisma from "~/lib/prisma";
 import { cn } from "~/lib/utils";
+
+export const meta: MetaFunction = () => [{ title: "取引詳細" }];
 
 export async function loader({ params }: LoaderFunctionArgs) {
   if (!params.dealId) {
