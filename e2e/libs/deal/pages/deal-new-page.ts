@@ -5,4 +5,9 @@ export class DealNewPage extends DealEditFormPage {
   constructor(protected page: Page) {
     super(page);
   }
+
+  static async goto(page: Page) {
+    await page.goto("/deals/new");
+    return new DealNewPage(page);
+  }
 }

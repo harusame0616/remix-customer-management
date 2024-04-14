@@ -98,17 +98,12 @@ export default function CustomerNew() {
     resolver: zodResolver(customerFormSchema),
   });
 
-  const handleSubmit = form.handleSubmit(
-    (data) => {
-      submit(JSON.stringify(data), {
-        method: "POST",
-        encType: "application/json",
-      });
-    },
-    (e, x) => {
-      console.log(e, x);
-    },
-  );
+  const handleSubmit = form.handleSubmit((data) => {
+    submit(JSON.stringify(data), {
+      method: "POST",
+      encType: "application/json",
+    });
+  });
 
   return (
     <div className="flex flex-col h-full">

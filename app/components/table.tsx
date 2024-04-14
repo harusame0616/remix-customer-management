@@ -17,12 +17,12 @@ type TableProps = {
   headers: Header[];
   skeleton?: false;
   rows: Record<string, ReactNode>[];
-  currentSortKey: string;
-  sortOrder: SortOrder;
+  currentSortKey?: string;
+  sortOrder?: SortOrder;
 };
 export function Table(props: TableProps) {
   return (
-    <ShadcnTable className="overflow-auto min-w-[840px]">
+    <ShadcnTable className="overflow-auto">
       <TableHeader className="sticky top-0 bg-background drop-shadow-sm ">
         <TableRow>
           {props.headers.map(({ sortKey, label, noSort }) => (
@@ -53,7 +53,7 @@ type HeaderItemProps = {
   sortKey: string;
   label: string;
   noSort?: boolean;
-  currentSortKey: string;
+  currentSortKey?: string;
 };
 function HeaderItem({
   currentSortKey,

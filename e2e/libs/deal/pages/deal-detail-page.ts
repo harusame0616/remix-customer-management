@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 
 export class DealDetailPage {
   public readonly titleLocator;
@@ -27,7 +27,7 @@ export class DealDetailPage {
     return this.editLinkLocator.click();
   }
 
-  waitForPage() {
-    return this.page.waitForURL(/\/deals\/.+/);
+  async wait() {
+    await expect(this.page).toHaveTitle("取引詳細");
   }
 }

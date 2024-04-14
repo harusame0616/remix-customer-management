@@ -1,23 +1,22 @@
 import { test as base, expect } from "@playwright/test";
-import { generateUniqueStr } from "e2e/libs/str";
-import { DealDetailPage } from "e2e/libs/deal/pages/deal-detail-page";
-import { DealEditFormPage } from "e2e/libs/deal/pages/deal-edit-form-page";
 import { DealPlatformLabel, DealStatusLabel } from "e2e/libs/deal/constants";
+import { DealEditFormPage } from "e2e/libs/deal/pages/deal-edit-form-page";
+import { DealNewPage } from "e2e/libs/deal/pages/deal-new-page";
+import { generateUniqueStr } from "e2e/libs/str";
 
 const test = base.extend<{ dealNewPage: DealEditFormPage }>({
   dealNewPage: async ({ page }, use) => {
-    await page.goto("/deals/new");
-    await use(new DealEditFormPage(page));
+    const dealNewPage = await DealNewPage.goto(page);
+    await use(dealNewPage);
   },
 });
 
 test.describe("登録できる", () => {
-  test("タイトルのみで登録できる", async ({ page, dealNewPage }) => {
+  test("タイトルのみで登録できる", async ({ dealNewPage }) => {
     const title = generateUniqueStr();
     await dealNewPage.input({ title });
-    await dealNewPage.save();
+    const dealDetailPage = await dealNewPage.save();
 
-    const dealDetailPage = new DealDetailPage(page);
     await Promise.all([
       expect(dealDetailPage.titleLocator).toHaveText(title),
       expect(dealDetailPage.customerLocator).toHaveText("-"),
@@ -33,13 +32,14 @@ test.describe("登録できる", () => {
     ]);
   });
 
-  test("全ての項目を入力して登録できる", async ({ dealNewPage, page }) => {
+  test("全ての項目を入力して登録できる", async ({ dealNewPage }) => {
     const title = generateUniqueStr();
     const content = generateUniqueStr();
     const platform = DealPlatformLabel.Coconala;
     const url = "https://example.com/" + generateUniqueStr();
     const deadline = "2023-12-31";
     const status = DealStatusLabel.Completed;
+    const customerName = "佐藤 花子";
 
     await dealNewPage.input({
       title,
@@ -49,12 +49,17 @@ test.describe("登録できる", () => {
       status,
       platform,
     });
-    await dealNewPage.save();
+    await dealNewPage.searchCustomer(customerName);
+    await dealNewPage.selectCustomerByName(customerName);
+    const dealDetailPage = await dealNewPage.save();
 
-    const dealDetailPage = new DealDetailPage(page);
     await Promise.all([
       expect(dealDetailPage.titleLocator).toHaveText(title),
-      expect(dealDetailPage.customerLocator).toHaveText("-"),
+      expect(
+        dealDetailPage.customerLocator.getByRole("link", {
+          name: customerName,
+        }),
+      ).toBeVisible(),
       expect(dealDetailPage.deadlineLocator).toHaveText(
         deadline.replace(/-/g, "/"),
       ),

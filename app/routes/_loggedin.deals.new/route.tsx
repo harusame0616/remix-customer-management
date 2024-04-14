@@ -31,6 +31,7 @@ const actionSchema = z.object({
     statusId: z.enum(dealStatusIds),
     platformId: z.enum(dealPlatformIds),
     url: z.string().max(DEAL_URL_MAX_LENGTH),
+    customerId: z.string().optional(),
   }),
 });
 
@@ -54,6 +55,9 @@ export async function action({ request }: ActionFunctionArgs) {
         platform: {
           connect: { dealPlatformId: actionParam.data.deal.platformId },
         },
+        customer: actionParam.data.deal.customerId
+          ? { connect: { customerId: actionParam.data.deal.customerId } }
+          : undefined,
       },
     });
     return redirect(`/deals/${dealId}`);
