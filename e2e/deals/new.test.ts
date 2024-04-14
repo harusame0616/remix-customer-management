@@ -1,12 +1,13 @@
 import { test as base, expect } from "@playwright/test";
 import { DealPlatformLabel, DealStatusLabel } from "e2e/libs/deal/constants";
 import { DealEditFormPage } from "e2e/libs/deal/pages/deal-edit-form-page";
+import { DealNewPage } from "e2e/libs/deal/pages/deal-new-page";
 import { generateUniqueStr } from "e2e/libs/str";
 
 const test = base.extend<{ dealNewPage: DealEditFormPage }>({
   dealNewPage: async ({ page }, use) => {
-    await page.goto("/deals/new");
-    await use(new DealEditFormPage(page));
+    const dealNewPage = await DealNewPage.goto(page);
+    await use(dealNewPage);
   },
 });
 

@@ -37,10 +37,6 @@ export function CustomerSelectDialog({
   const [pageNumber, setPageNumber] = useState(1);
   const [keyword, setKeyword] = useState("");
 
-  const handleSubmit = form.handleSubmit((data) => {
-    setKeyword(data.keyword || "");
-  });
-
   useEffect(() => {
     if (fetcher.data?.success === true) {
       setCustomers(fetcher.data.customers);
@@ -80,21 +76,28 @@ export function CustomerSelectDialog({
           <DialogTitle>顧客選択</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            className="flex flex-col gap-2"
-            onSubmit={handleSubmit}
-            id={formId}
-          >
-            <FormInput
-              label="キーワード"
-              control={form.control}
-              description="名前、名前（かな）、住所、備考から検索"
-              name="keyword"
-            />
-            <Button type="submit" form={formId}>
-              検索
-            </Button>
-          </form>
+          <search>
+            <form className="flex flex-col gap-2" id={formId}>
+              <FormInput
+                label="キーワード"
+                control={form.control}
+                description="名前、名前（かな）、住所、備考から検索"
+                name="keyword"
+              />
+              <Button
+                type="button"
+                form={formId}
+                onClick={async () => {
+                  // onSubmit だとページ自体の submit が走ってしまうため
+                  if (await form.trigger()) {
+                    setKeyword(form.getValues("keyword"));
+                  }
+                }}
+              >
+                検索
+              </Button>
+            </form>
+          </search>
         </Form>
         <div className="h-full w-full overflow-auto">
           {fetcher.state === "loading" ? (
@@ -161,7 +164,11 @@ export function CustomerSelectTable(
       })
     : props.customers.map((customer) => ({
         name: customer.name,
-        select: <Button onClick={() => props.onSelect(customer)}>選択</Button>,
+        select: (
+          <Button type="button" onClick={() => props.onSelect(customer)}>
+            選択
+          </Button>
+        ),
       }));
 
   return <Table rows={customers} headers={headers} />;

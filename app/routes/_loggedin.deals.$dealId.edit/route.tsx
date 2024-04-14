@@ -107,7 +107,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
           connect: { dealPlatformId: actionParam.data.deal.platformId },
         },
         url: actionParam.data.deal.url,
-        customer: { connect: { customerId: actionParam.data.deal.customerId } },
+        customer: actionParam.data.deal.customerId
+          ? { connect: { customerId: actionParam.data.deal.customerId } }
+          : { disconnect: true },
       },
     });
 

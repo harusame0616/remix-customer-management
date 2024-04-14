@@ -20,12 +20,11 @@ const test = base.extend<{ dealEditPage: DealEditPage }>({
 });
 
 test.describe("編集できる", () => {
-  test("タイトルのみで編集できる", async ({ page, dealEditPage }) => {
+  test("タイトルのみで編集できる", async ({ dealEditPage }) => {
     const title = generateUniqueStr();
     await dealEditPage.input({ title });
-    await dealEditPage.save();
+    const dealDetailPage = await dealEditPage.save();
 
-    const dealDetailPage = new DealDetailPage(page);
     await Promise.all([
       expect(dealDetailPage.titleLocator).toHaveText(title),
       expect(dealDetailPage.customerLocator).toHaveText("-"),
@@ -41,13 +40,14 @@ test.describe("編集できる", () => {
     ]);
   });
 
-  test("全ての項目を入力して編集できる", async ({ dealEditPage, page }) => {
+  test("全ての項目を入力して編集できる", async ({ dealEditPage }) => {
     const title = generateUniqueStr();
     const content = generateUniqueStr();
     const platform = DealPlatformLabel.Coconala;
     const url = generateUniqueURL();
     const deadline = "2023-12-31";
     const status = DealStatusLabel.Completed;
+    const customerName = "佐藤 花子";
 
     await dealEditPage.input({
       title,
@@ -57,12 +57,13 @@ test.describe("編集できる", () => {
       status,
       platform,
     });
-    await dealEditPage.save();
+    await dealEditPage.searchCustomer(customerName);
+    await dealEditPage.selectCustomerByName(customerName);
 
-    const dealDetailPage = new DealDetailPage(page);
+    const dealDetailPage = await dealEditPage.save();
     await Promise.all([
       expect(dealDetailPage.titleLocator).toHaveText(title),
-      expect(dealDetailPage.customerLocator).toHaveText("-"),
+      expect(dealDetailPage.customerLocator).toHaveText(customerName),
       expect(dealDetailPage.deadlineLocator).toHaveText(
         deadline.replace(/-/g, "/"),
       ),
