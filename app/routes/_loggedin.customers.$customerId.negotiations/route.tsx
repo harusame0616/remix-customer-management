@@ -31,7 +31,14 @@ export default function Page() {
             <Await resolve={loadData.deals}>
               {(resolvedValue) => (
                 <DealTable
-                  deals={resolvedValue}
+                  deals={resolvedValue.map((deal) => ({
+                    ...deal,
+                    deadline: deal.deadline
+                      ? new Date(deal.deadline)
+                      : undefined,
+                    registeredAt: new Date(deal.registeredAt),
+                    editedAt: new Date(deal.editedAt),
+                  }))}
                   sortKey={sortKey}
                   sortOrder={sortOrder}
                 />
