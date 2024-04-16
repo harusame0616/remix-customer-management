@@ -5,15 +5,15 @@ type LoginPayload = {
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function login(payload: LoginPayload) {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  return {
-    success:
-      [
-        "admin@example.com",
-        "editor@example.com",
-        "viewer@example.com",
-      ].includes(payload.email) && payload.password === "password",
-  };
+  const role = {
+    "admin@example.com": "admin",
+    "editor@example.com": "editor",
+    "viewer@example.com": "viewer",
+  }[payload.email];
+
+  return payload.password === "password" && role
+    ? { success: true, role }
+    : { success: false };
 }
 
 type ResetPayload = {
@@ -25,8 +25,4 @@ export async function resetPassword(payload: ResetPayload) {
   return {
     success: true,
   };
-}
-
-export async function isLoggedIn() {
-  return true;
 }
