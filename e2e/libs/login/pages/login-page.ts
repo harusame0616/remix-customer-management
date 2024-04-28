@@ -17,6 +17,9 @@ export class LoginPage {
     await this.emailLocator.fill(email);
     await this.passwordLocator.fill(password);
     await this.loginButtonLocator.click();
+
+    await this.page.waitForURL("/");
+    return this.page;
   }
 
   static async goto(page: Page) {
