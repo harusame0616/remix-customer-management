@@ -9,6 +9,7 @@ import { LoaderFunctionArgs, MetaFunction, defer } from "@remix-run/node";
 import { Await, Link, useLoaderData, useParams } from "@remix-run/react";
 import { format } from "date-fns";
 import { Suspense, useId } from "react";
+import { PageLayout } from "~/components/page-layout";
 import { SkeletonPlaceholder } from "~/components/skeleton-placeholder";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
@@ -79,26 +80,17 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <section aria-label="タイトルバー" className="p-2 md:px-4 flex text-lg">
-        <h1 className="flex-grow flex items-center">
-          取引詳細：
-          {
-            <Suspense fallback={<Skeleton className="h-4 w-20" />}>
-              <Await resolve={loadData.dealDetail}>
-                {(dealDetail) => dealDetail.title}
-              </Await>
-            </Suspense>
-          }
-        </h1>
-        <div className="flex gap-x-4 items-center">
-          <div>
-            <Link to={`/deals/${param.dealId}/edit`}>編集</Link>
-          </div>
-          <Button variant="destructive">削除</Button>
-        </div>
-      </section>
-      <Separator />
+    <PageLayout
+      title="取引詳細"
+      toolbarItems={[
+        <Link to={`/deals/${param.dealId}/edit`} key="edit">
+          編集
+        </Link>,
+        <Button variant="destructive" key="delete">
+          削除
+        </Button>,
+      ]}
+    >
       <div className="flex flex-col flex-grow overflow-auto">
         <div className="flex justify-center">
           <div className="w-full max-w-4xl p-4">
@@ -119,7 +111,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 
