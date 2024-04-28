@@ -1,16 +1,19 @@
 import type { LinksFunction } from "@remix-run/node";
-import { NavLink, Outlet } from "@remix-run/react";
+import { NavLink, Outlet, useFetcher } from "@remix-run/react";
 import { Logo } from "~/components/logo";
 import { SideMenu } from "~/components/side-menu";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import stylesheet from "~/tailwind.css";
+export { loader } from "./controller";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
 export default function LoggedInLayout() {
+  const fetcher = useFetcher();
+
   return (
     <>
       <header className="flex items-center py-2">
@@ -27,7 +30,13 @@ export default function LoggedInLayout() {
             </ul>
           </nav>
           <div>
-            <Button variant="outline">ログアウト</Button>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => fetcher.load("/logout")}
+            >
+              ログアウト
+            </Button>
           </div>
         </div>
       </header>

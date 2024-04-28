@@ -15,6 +15,7 @@ import { FormInput } from "~/components/form-input";
 import { LoginQRCode } from "~/components/login-qr-code";
 import { Logo } from "~/components/logo";
 import { Form as ShadcnForm } from "~/components/ui/form";
+import { signedInUser } from "~/cookies.server";
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
@@ -65,7 +66,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const loginResult = await login(loginParam.data);
   return loginResult.success
-    ? redirect("/")
+    ? redirect("/", {
+        headers: {
+          "Set-Cookie": await signedInUser.serialize({
+            role: loginResult.role,
+            email: loginParam.data.email,
+          }),
+        },
+      })
     : json(
         {
           success: false,

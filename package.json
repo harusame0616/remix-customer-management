@@ -20,7 +20,8 @@
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "start": "remix-serve ./build/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "test:e2e": "playwright test"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
