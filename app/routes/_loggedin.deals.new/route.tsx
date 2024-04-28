@@ -6,7 +6,7 @@ import {
 } from "@remix-run/node";
 import { useSubmit } from "@remix-run/react";
 import z from "zod";
-import { Separator } from "~/components/ui/separator";
+import { PageLayout } from "~/components/page-layout";
 import DealEditForm, {
   SubmitDeal,
 } from "~/domains/deal/comopnents/deal-edit-form";
@@ -79,14 +79,10 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-2 md:px-4 flex">
-        <h1>{pageTitle}</h1>
-      </div>
-      <Separator />
-      <div className="flex flex-col flex-grow px-4 items-center mt-4 overflow-auto">
+    <PageLayout title={pageTitle}>
+      <div className="flex flex-col flex-grow p-4 items-center overflow-auto">
         <DealEditForm onSubmit={handleSubmit} />
       </div>
-    </div>
+    </PageLayout>
   );
 }

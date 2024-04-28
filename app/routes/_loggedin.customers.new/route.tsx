@@ -40,6 +40,7 @@ import {
   FormTextarea,
 } from "../../components/form-input";
 import { createCustomerController } from "./controllers";
+import { PageLayout } from "~/components/page-layout";
 
 export const action = createCustomerController;
 
@@ -106,12 +107,8 @@ export default function CustomerNew() {
   });
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-2 md:px-4 flex">
-        <h1>顧客の新規登録</h1>
-      </div>
-      <Separator />
-      <div className="flex flex-col flex-grow px-4 items-center mt-4 overflow-auto">
+    <PageLayout title="顧客の新規登録">
+      <div className="flex flex-col flex-grow p-4 items-center overflow-auto">
         {actionData?.success === false && (
           <Alert
             variant="destructive"
@@ -241,6 +238,6 @@ export default function CustomerNew() {
           </form>
         </Form>
       </div>
-    </div>
+    </PageLayout>
   );
 }
