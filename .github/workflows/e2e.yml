@@ -15,6 +15,10 @@ env:
 jobs:
   test:
     timeout-minutes: 60
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+        shard: [1/3, 2/3, 3/3]
     runs-on: ubuntu-latest
     steps:
       - name: チェックアウト
@@ -48,7 +52,7 @@ jobs:
         run: pnpm build
 
       - name: テスト実行
-        run: pnpm exec playwright test
+        run: pnpm exec playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard}}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
