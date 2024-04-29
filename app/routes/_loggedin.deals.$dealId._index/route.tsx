@@ -6,12 +6,19 @@ import {
   PersonIcon,
 } from "@radix-ui/react-icons";
 import { LoaderFunctionArgs, MetaFunction, defer } from "@remix-run/node";
-import { Await, Link, useLoaderData, useParams } from "@remix-run/react";
+import {
+  Await,
+  Link,
+  useFormAction,
+  useLoaderData,
+  useParams,
+  useSubmit,
+} from "@remix-run/react";
 import { format } from "date-fns";
 import { Suspense, useId } from "react";
+import { AlertDialog } from "~/components/alert-dialog";
 import { PageLayout } from "~/components/page-layout";
 import { SkeletonPlaceholder } from "~/components/skeleton-placeholder";
-import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { DealStatusId, dealStatusLabelMap } from "~/domains/deal/enum";
@@ -74,6 +81,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
 export default function Page() {
   const loadData = useLoaderData<typeof loader>();
   const param = useParams();
+  const deleteAction = useFormAction("delete");
+  const submit = useSubmit();
 
   if (!param.dealId) {
     throw new Error("dealId is required");
@@ -86,9 +95,21 @@ export default function Page() {
         <Link to={`/deals/${param.dealId}/edit`} key="edit">
           編集
         </Link>,
-        <Button variant="destructive" key="delete">
-          削除
-        </Button>,
+        <AlertDialog
+          title="取引の削除確認"
+          triggerLabel="削除"
+          continueLabel="削除する"
+          key="delete"
+          action={(close) => {
+            submit(null, {
+              method: "POST",
+              action: deleteAction,
+            });
+            close();
+          }}
+        >
+          取引を削除しますがよろしいですか？
+        </AlertDialog>,
       ]}
     >
       <div className="flex flex-col flex-grow overflow-auto">

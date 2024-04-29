@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+import { DealListPage } from "./deal-list-page";
 
 export class DealDetailPage {
   public readonly titleLocator;
@@ -25,6 +26,14 @@ export class DealDetailPage {
 
   goToEdit() {
     return this.editLinkLocator.click();
+  }
+
+  async delete() {
+    await this.page.getByRole("button", { name: "削除" }).click();
+    await this.page.getByRole("button", { name: "削除する" }).click();
+
+    await this.page.waitForURL("/deals");
+    return new DealListPage(this.page);
   }
 
   async wait() {
