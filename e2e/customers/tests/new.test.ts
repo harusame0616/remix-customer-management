@@ -20,7 +20,7 @@ import {
 
 const test = base.extend<{ customerNewPage: CustomerNewPage }>({
   customerNewPage: async ({ page }, use) => {
-    const customerNewPage = await CustomerNewPage.goTo(page);
+    const customerNewPage = await CustomerNewPage.goto(page);
     await use(customerNewPage);
   },
 });

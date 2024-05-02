@@ -122,7 +122,7 @@ export class CustomerNewPage {
     await this.page.goto(CustomerNewPage.PATH);
   }
 
-  static async goTo(page: Page) {
+  static async goto(page: Page) {
     const customerNewPage = new CustomerNewPage(page);
     await customerNewPage.goTo();
     return customerNewPage;
