@@ -1,10 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { prismaTransactional } from "@transactional/prisma";
 import z from "zod";
-
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
 
 const vercelEnvSchema = z
   .enum(["development", "preview", "production"])
@@ -28,14 +24,20 @@ const datasourceUrl =
     ? databaseUrl
     : `${databaseUrl}&schema=${repoName}_${env}_${branchName.replace(/[\W]/g, "_")}`;
 
-const prisma =
-  global.prisma ||
-  new PrismaClient({
-    // プレビュー環境ではブランチごとにスキーマが別れているため参照先を切り替える
-    // スキーマ名はブランチ名の「英数字_」以外を _ に置換したもの name/foo -> name_foo
-    datasourceUrl,
-  });
+const transactionalPrismaClient = new PrismaClient({
+  // プレビュー環境ではブランチごとにスキーマが別れているため参照先を切り替える
+  // スキーマ名はブランチ名の「英数字_」以外を _ に置換したもの name/foo -> name_foo
+  datasourceUrl,
+}).$extends(prismaTransactional);
+
+export type TransactionalPrismaClient = typeof transactionalPrismaClient;
+const prisma = global.prisma || transactionalPrismaClient;
+
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: TransactionalPrismaClient | undefined;
+}
 
 if (process.env.NODE_ENV === "development") global.prisma = prisma;
 
-export default prisma;
+export default transactionalPrismaClient;

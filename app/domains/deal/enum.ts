@@ -55,6 +55,8 @@ export const DealPlatform = {
     label: "CloudWorks",
   },
 } as const;
+export type DealPlatform = typeof DealPlatform;
+
 export type DealPlatformId =
   (typeof DealPlatform)[keyof typeof DealPlatform]["dealPlatformId"];
 export const dealPlatforms = Object.values(DealPlatform);
