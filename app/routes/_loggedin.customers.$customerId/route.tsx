@@ -4,6 +4,7 @@ import { LinkTabs } from "~/components/link-tabs";
 import { PageLayout } from "~/components/page-layout";
 import { Skeleton } from "~/components/ui/skeleton";
 import { type Loader } from "./controllers";
+import { CustomerDeleteButton } from "./customer-delete-button";
 export { loader } from "./controllers";
 
 export default function Page() {
@@ -31,7 +32,10 @@ export default function Page() {
   );
 
   return (
-    <PageLayout title={title}>
+    <PageLayout
+      title={title}
+      toolbarItems={[<CustomerDeleteButton key="delete" />]}
+    >
       <LinkTabs links={links} />
       <div className="flex flex-col flex-grow overflow-auto">
         <Outlet />

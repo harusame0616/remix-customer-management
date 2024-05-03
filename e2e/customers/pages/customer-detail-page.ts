@@ -1,4 +1,5 @@
 import { Page } from "@playwright/test";
+import { CustomerListPage } from "./customer-list-page";
 
 export class CustomerDetailPage {
   static readonly PATH_PATTERN = /\/customers\/([a-zA-Z0-9_-]+)(?:\?.*)?$/;
@@ -34,5 +35,13 @@ export class CustomerDetailPage {
     this.registeredAtLocator = page
       .getByTestId("profile11")
       .getByRole("definition");
+  }
+
+  async delete() {
+    await this.page.getByRole("button", { name: "削除" }).click();
+    await this.page.getByRole("button", { name: "削除する" }).click();
+
+    await this.page.waitForURL("/customers");
+    return new CustomerListPage(this.page);
   }
 }

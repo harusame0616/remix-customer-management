@@ -27,6 +27,7 @@ export class DealEditFormPage {
     deadline,
     status,
     platform,
+    customerName,
   }: Partial<{
     title: string;
     content: string;
@@ -34,6 +35,7 @@ export class DealEditFormPage {
     deadline: string;
     status: DealStatus;
     platform: DealPlatform;
+    customerName: string;
   }>) {
     if (title) {
       await this.titleLocator.fill(title);
@@ -52,6 +54,10 @@ export class DealEditFormPage {
     }
     if (status) {
       await this.page.getByRole("radio", { name: status }).check();
+    }
+    if (customerName) {
+      await this.searchCustomer(customerName);
+      await this.selectCustomerByName(customerName);
     }
   }
 
