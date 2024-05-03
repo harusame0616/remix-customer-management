@@ -1,10 +1,4 @@
-import {
-  Await,
-  Outlet,
-  useLoaderData,
-  useNavigation,
-  useParams,
-} from "@remix-run/react";
+import { Await, Outlet, useLoaderData, useParams } from "@remix-run/react";
 import { Suspense } from "react";
 import { LinkTabs } from "~/components/link-tabs";
 import { PageLayout } from "~/components/page-layout";
