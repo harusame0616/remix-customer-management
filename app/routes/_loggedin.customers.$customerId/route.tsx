@@ -5,6 +5,8 @@ import { PageLayout } from "~/components/page-layout";
 import { Skeleton } from "~/components/ui/skeleton";
 import { type Loader } from "./controllers";
 import { CustomerDeleteButton } from "./customer-delete-button";
+import { haveAuthorization } from "~/lib/auth";
+import { Role } from "~/domains/auth-user/roles";
 export { loader } from "./controllers";
 
 export default function Page() {
@@ -20,7 +22,6 @@ export default function Page() {
     },
     { to: `/customers/${customerId}/negotiations`, label: "商談", end: true },
   ];
-
   const title = (
     <>
       <span className="mr-4">顧客詳細</span>
@@ -30,11 +31,16 @@ export default function Page() {
       <span className="ml-4">様</span>
     </>
   );
+  const { role } = loadData;
 
   return (
     <PageLayout
       title={title}
-      toolbarItems={[<CustomerDeleteButton key="delete" />]}
+      toolbarItems={
+        haveAuthorization([Role.Admin, Role.Editor], role)
+          ? [<CustomerDeleteButton key="delete" />]
+          : []
+      }
     >
       <LinkTabs links={links} />
       <div className="flex flex-col flex-grow overflow-auto">

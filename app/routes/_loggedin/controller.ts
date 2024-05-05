@@ -1,17 +1,15 @@
 import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { signedInUser } from "~/cookies.server";
+import { getRole } from "~/lib/auth";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await signedInUser.parse(cookieHeader)) || {};
+  const role = await getRole(request);
 
-  if (!cookie.role) {
+  if (!role) {
     return redirect("/login");
   }
 
   return json({
     signedIn: true,
-    role: cookie.role,
-    email: cookie.email,
+    role,
   });
 }

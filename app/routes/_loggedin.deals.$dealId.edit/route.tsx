@@ -10,6 +10,7 @@ import { Await, useLoaderData, useSubmit } from "@remix-run/react";
 import { ComponentProps, Suspense } from "react";
 import z from "zod";
 import { PageLayout } from "~/components/page-layout";
+import { Role } from "~/domains/auth-user/roles";
 import DealEditForm, {
   SubmitDeal,
 } from "~/domains/deal/comopnents/deal-edit-form";
@@ -24,6 +25,7 @@ import {
   dealPlatformIds,
   dealStatusIds,
 } from "~/domains/deal/enum";
+import { getRole, haveAuthorization } from "~/lib/auth";
 import prisma from "~/lib/prisma";
 
 const pageTitle = "取引の編集";
@@ -31,10 +33,15 @@ export const meta: MetaFunction = () => {
   return [{ title: `${pageTitle} - 顧客管理システム` }];
 };
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   if (!params.dealId) {
     console.error("dealId is required");
     throw new Response("Bad Request", { status: 400 });
+  }
+
+  const role = await getRole(request);
+  if (!haveAuthorization([Role.Admin, Role.Editor], role)) {
+    throw new Response("Forbidden", { status: 403 });
   }
 
   return defer({
@@ -93,6 +100,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!actionParam.success) {
     console.error(JSON.stringify(actionParam.error, null, 4));
     throw new Response("Bad Request", { status: 400 });
+  }
+  const role = await getRole(request);
+  if (!role) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+  if (role === Role.Viewer) {
+    throw new Response("Forbidden", { status: 403 });
   }
 
   try {

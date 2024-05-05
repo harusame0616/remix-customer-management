@@ -2,18 +2,24 @@ import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useActionData } from "@remix-run/react";
 import z from "zod";
 import { ErrorMessage } from "~/components/error-message";
+import { Role } from "~/domains/auth-user/roles";
 import { PrismaCustomerRepository } from "~/domains/customer/infrastractures/prisma-repository";
 import { CustomerDeleteUsecase } from "~/domains/customer/usecases/delete";
 import { PrismaDealRepository } from "~/domains/deal/infrastractures/prisma-repository";
+import { getRole, haveAuthorization } from "~/lib/auth";
 
 const paramsSchema = z.object({
   customerId: z.string().min(1),
 });
-export const action = async ({ params }: ActionFunctionArgs) => {
+export const action = async ({ params, request }: ActionFunctionArgs) => {
   const parsedParams = paramsSchema.safeParse(params);
-
   if (!parsedParams.success) {
     return json({ success: false, error: parsedParams.error }, { status: 400 });
+  }
+
+  const role = await getRole(request);
+  if (!haveAuthorization([Role.Admin, Role.Editor], role)) {
+    throw new Response("Forbidden", { status: 403 });
   }
 
   const customerDeleteUsecase = new CustomerDeleteUsecase(

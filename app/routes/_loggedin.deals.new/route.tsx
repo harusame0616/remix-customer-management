@@ -7,6 +7,7 @@ import {
 import { useSubmit } from "@remix-run/react";
 import z from "zod";
 import { PageLayout } from "~/components/page-layout";
+import { Role } from "~/domains/auth-user/roles";
 import DealEditForm, {
   SubmitDeal,
 } from "~/domains/deal/comopnents/deal-edit-form";
@@ -16,6 +17,7 @@ import {
   DEAL_URL_MAX_LENGTH,
 } from "~/domains/deal/constants";
 import { dealPlatformIds, dealStatusIds } from "~/domains/deal/enum";
+import { getRole, haveAuthorization } from "~/lib/auth";
 import prisma from "~/lib/prisma";
 
 const pageTitle = "取引の新規登録";
@@ -42,6 +44,10 @@ export async function action({ request }: ActionFunctionArgs) {
     console.error(JSON.stringify(actionParam.error, null, 4));
 
     throw new Response("パラメーターが不正です", { status: 400 });
+  }
+  const role = await getRole(request);
+  if (!haveAuthorization([Role.Admin, Role.Editor], role)) {
+    throw new Response("Forbidden", { status: 403 });
   }
 
   try {

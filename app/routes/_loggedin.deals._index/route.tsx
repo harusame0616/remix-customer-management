@@ -1,9 +1,4 @@
-import {
-  LoaderFunctionArgs,
-  defer,
-  json,
-  type MetaFunction,
-} from "@remix-run/node";
+import { LoaderFunctionArgs, defer, type MetaFunction } from "@remix-run/node";
 import { Await, Link, useLoaderData, useNavigation } from "@remix-run/react";
 import { Suspense } from "react";
 import z from "zod";
@@ -23,6 +18,8 @@ import {
   DealListItem,
   DealTable,
 } from "../../domains/deal/comopnents/deal-table";
+import { getRole, haveAuthorization } from "~/lib/auth";
+import { Role, roles } from "~/domains/auth-user/roles";
 
 const defaultSortKey = "registeredAt";
 export const meta: MetaFunction = () => {
@@ -138,7 +135,12 @@ function getDealsTotalCount() {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const loaderParams = parseGetDealsSearchParams(new URL(request.url));
   if (!loaderParams.success) {
-    return json(loaderParams);
+    throw new Response("Bad request", { status: 400 });
+  }
+
+  const role = await getRole(request);
+  if (!haveAuthorization(roles, role)) {
+    throw new Response("Forbidden", { status: 403 });
   }
 
   const { sortKey, sortOrder, page, ...condition } = loaderParams.data;
@@ -146,6 +148,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     success: true,
     deals: getDeals({ sortKey, page, sortOrder, condition }),
     totalCount: getDealsTotalCount(),
+    role,
   });
 };
 
@@ -164,9 +167,11 @@ export default function Page() {
       title="取引一覧"
       toolbarItems={[
         <DealSearchDrawer key="search" />,
-        <Link to="/deals/new" key="register">
-          新規登録
-        </Link>,
+        loadData.role !== Role.Viewer ? (
+          <Link to="/deals/new" key="register">
+            新規登録
+          </Link>
+        ) : null,
       ]}
       totalCount={loadData.totalCount}
     >

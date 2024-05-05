@@ -7,6 +7,8 @@ import { DEFAULT_SORT_KEY } from "./search";
 import { Loader } from "./controllers";
 import { CustomerSearchDrawer } from "./customer-search-drawer";
 import { CustomerTable } from "./customer-table";
+import { haveAuthorization } from "~/lib/auth";
+import { Role } from "~/domains/auth-user/roles";
 export { loader } from "./controllers";
 
 export const meta: MetaFunction = () => {
@@ -15,13 +17,13 @@ export const meta: MetaFunction = () => {
 
 export default function Page() {
   const loadData = useLoaderData<Loader>();
-
   const navigation = useNavigation();
   const { sortKey, sortOrder } = useSort({ defaultSortKey: DEFAULT_SORT_KEY });
 
   if (!loadData.success) {
     return <div>error</div>;
   }
+  const { role } = loadData;
 
   return (
     <ListPageLayout
@@ -29,9 +31,13 @@ export default function Page() {
       totalCount={loadData.totalCount}
       toolbarItems={[
         <CustomerSearchDrawer key="search" />,
-        <Link to="/customers/new" key="register">
-          新規登録
-        </Link>,
+        haveAuthorization([Role.Admin, Role.Editor], role) ? (
+          <Link to="/customers/new" key="register">
+            新規登録
+          </Link>
+        ) : (
+          []
+        ),
       ]}
     >
       {navigation.location?.pathname === "/customers" ? (

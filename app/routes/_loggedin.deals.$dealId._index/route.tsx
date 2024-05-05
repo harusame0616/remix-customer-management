@@ -21,19 +21,26 @@ import { PageLayout } from "~/components/page-layout";
 import { SkeletonPlaceholder } from "~/components/skeleton-placeholder";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Role, roles } from "~/domains/auth-user/roles";
 import { DealStatusId, dealStatusLabelMap } from "~/domains/deal/enum";
+import { getRole, haveAuthorization } from "~/lib/auth";
 import prisma from "~/lib/prisma";
 import { cn } from "~/lib/utils";
 
 export const meta: MetaFunction = () => [{ title: "取引詳細" }];
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!params.dealId) {
     console.error("dealId is required");
     throw new Response("Bad Request", { status: 400 });
   }
+  const role = await getRole(request);
+  if (!haveAuthorization(roles, role)) {
+    throw new Response("Forbidden", { status: 403 });
+  }
 
   return defer({
+    role,
     dealDetail: new Promise<DealDetail>((resolve, reject) =>
       prisma.deal
         .findUnique({
@@ -91,26 +98,30 @@ export default function Page() {
   return (
     <PageLayout
       title="取引詳細"
-      toolbarItems={[
-        <Link to={`/deals/${param.dealId}/edit`} key="edit">
-          編集
-        </Link>,
-        <AlertDialog
-          title="取引の削除確認"
-          triggerLabel="削除"
-          continueLabel="削除する"
-          key="delete"
-          action={(close) => {
-            submit(null, {
-              method: "POST",
-              action: deleteAction,
-            });
-            close();
-          }}
-        >
-          取引を削除しますがよろしいですか？
-        </AlertDialog>,
-      ]}
+      toolbarItems={
+        haveAuthorization([Role.Admin, Role.Editor], loadData.role)
+          ? [
+              <Link to={`/deals/${param.dealId}/edit`} key="edit">
+                編集
+              </Link>,
+              <AlertDialog
+                title="取引の削除確認"
+                triggerLabel="削除"
+                continueLabel="削除する"
+                key="delete"
+                action={(close) => {
+                  submit(null, {
+                    method: "POST",
+                    action: deleteAction,
+                  });
+                  close();
+                }}
+              >
+                取引を削除しますがよろしいですか？
+              </AlertDialog>,
+            ]
+          : []
+      }
     >
       <div className="flex flex-col flex-grow overflow-auto">
         <div className="flex justify-center">
