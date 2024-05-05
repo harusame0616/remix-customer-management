@@ -1,10 +1,13 @@
 import type { LinksFunction } from "@remix-run/node";
-import { NavLink, Outlet, useFetcher } from "@remix-run/react";
+import { NavLink, Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import { Logo } from "~/components/logo";
 import { SideMenu } from "~/components/side-menu";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import stylesheet from "~/tailwind.css";
+import { loader } from "./controller";
+import { haveAuthorization } from "~/lib/auth";
+import { Role } from "~/domains/auth-user/roles";
 export { loader } from "./controller";
 
 export const links: LinksFunction = () => [
@@ -13,6 +16,8 @@ export const links: LinksFunction = () => [
 
 export default function LoggedInLayout() {
   const fetcher = useFetcher();
+  const loadData = useLoaderData<typeof loader>();
+  const { role } = loadData;
 
   return (
     <>
@@ -26,7 +31,9 @@ export default function LoggedInLayout() {
             <ul className="flex gap-4 h-full">
               <MenuItem label="取引" href="/deals" />
               <MenuItem label="顧客" href="/customers" />
-              <MenuItem label="ユーザー" href="/users" />
+              {haveAuthorization([Role.Admin], role) && (
+                <MenuItem label="ユーザー" href="/users" />
+              )}
             </ul>
           </nav>
           <div>

@@ -3,6 +3,7 @@ import { PrismaCustomerRepository } from "~/domains/customer/infrastractures/pri
 import { CustomerCreateUsecase } from "~/domains/customer/usecases/create";
 
 import { z } from "zod";
+import { Role } from "~/domains/auth-user/roles";
 import {
   addressSchema,
   birthdaySchema,
@@ -16,6 +17,7 @@ import {
   sexSchema,
   urlSchema,
 } from "~/domains/customer/schema";
+import { getRole, haveAuthorization } from "~/lib/auth";
 
 const createCustomerSchema = z.object({
   name: nameSchema(),
@@ -40,6 +42,11 @@ export async function createCustomerController({
       success: false,
       error: { message: "パラメーターが不正です" },
     });
+  }
+
+  const role = await getRole(request);
+  if (!haveAuthorization([Role.Admin, Role.Editor], role)) {
+    throw new Response("Forbidden", { status: 403 });
   }
 
   try {

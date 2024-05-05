@@ -1,4 +1,6 @@
 import { json, LoaderFunctionArgs } from "@remix-run/node";
+import { roles } from "~/domains/auth-user/roles";
+import { getRole, haveAuthorization } from "~/lib/auth";
 import { queryCustomers, queryCustomerTotalCount } from "./queries";
 import { parseGetCustomersSearchParams } from "./search";
 
@@ -8,6 +10,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (!loaderParams.success) {
     return json(loaderParams);
   }
+
+  const role = await getRole(request);
+  if (!haveAuthorization(roles, role)) {
+    throw new Response("Forbidden", { status: 403 });
+  }
+
   const condition = { keyword: loaderParams.data.keyword };
   const [customers, totalCount] = await Promise.all([
     queryCustomers({
