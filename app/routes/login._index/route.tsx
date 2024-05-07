@@ -22,6 +22,7 @@ import {
 } from "~/domains/auth-user/constants";
 import { useIsSubmitting } from "~/hooks/use-is-loading";
 import { login } from "~/lib/auth";
+import { DemoDescription } from "../../components/demo-description";
 
 export const meta: MetaFunction = () => {
   return [
@@ -89,9 +90,9 @@ export default function Index() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="flex items-center flex-col mx-8">
+    <div className="flex items-center flex-col p-8 overflow-auto">
       <section
-        className="mt-[10%] max-w-md w-full"
+        className="mt-[5%] max-w-md w-full"
         aria-labelledby="login-section-text"
       >
         <h1 id="login-section-text" className="text-center mb-4">
@@ -105,7 +106,9 @@ export default function Index() {
         モバイルアクセス用 URL
         <LoginQRCode />
       </div>
-      <DemoDescription />
+      <div className="max-w-2xl mt-8">
+        <DemoDescription />
+      </div>
     </div>
   );
 }
@@ -157,85 +160,5 @@ function LoginForm({ isSubmitting }: { isSubmitting: boolean }) {
         </div>
       </RemixForm>
     </ShadcnForm>
-  );
-}
-
-function DemoDescription() {
-  return (
-    <section
-      aria-labelledby="demo-description-text"
-      className="max-w-2xl mt-24"
-    >
-      <h2 id="demo-description-text" className="text-lg font-bold mb-4">
-        顧客管理システムのデモ環境説明
-      </h2>
-      <div className="space-y-4">
-        <div>
-          <h3 className={`text-lg mb-2 before:content-["■"]`}>
-            本システムについて
-          </h3>
-          <p className="flex flex-col">
-            <span>
-              本システムは架空の仕様を想定した顧客管理システムのデモ環境です。
-            </span>
-            <span>
-              ご自由にお試しいただけますが、誰でも閲覧・操作できるため実在するデータを入力するのはご遠慮ください。
-            </span>
-            <span>データは毎日リセットされます、ご了承ください</span>
-          </p>
-        </div>
-        <div>
-          <h3 className={`text-lg mb-2 before:content-["■"]`}>機能</h3>
-          <p>以下の機能がご利用いただけます。</p>
-          <dl className="list-disc list-inside space-y-4 mt-4">
-            <div>
-              <dt>・ログイン機能</dt>
-              <dd>
-                事前にログイン登録してあるログインユーザーのメールアドレスとパスワードによってシステムの利用を制限するセキュリティー機能です。
-                また、パスワードを忘れた場合のパスワードリセット機能も存在します（デモ環境では利用できません）。
-              </dd>
-            </div>
-            <div>
-              <dt>・権限管理機能</dt>
-              <dd>
-                ログインユーザーに権限を割り振って使用できる機能を制限する機能です。
-              </dd>
-            </div>
-            <div>
-              <dt>・顧客管理機能</dt>
-              <dd>顧客を検索・閲覧・作成・編集・削除する機能です。</dd>
-            </div>
-            <div>
-              <dt>・ログインユーザー管理機能</dt>
-              <dd>
-                ログインユーザーを検索・閲覧・作成・編集・削除する機能です。
-              </dd>
-            </div>
-          </dl>
-        </div>
-        <div>
-          <h3 className={`text-lg mb-2 before:content-["■"]`}>
-            ログインユーザーについて
-          </h3>
-          <p className="mb-4">
-            メールアドレスは以下のいずれかを入力してください。
-          </p>
-          <dl className="space-y-4">
-            <div>
-              <dt>・管理者（全機能が利用可能）</dt>
-              <dt>admin@example.com</dt>
-            </div>
-            <div>
-              <dt>・編集者（顧客管理が利用可能）</dt>
-              <dd>editor@example.com</dd>
-            </div>
-            <div>
-              <dt>・閲覧者（顧客管理の検索・閲覧のみ利用可能）</dt>
-              <dt>viewer@example.com</dt>
-            </div>
-          </dl>
-        </div>
-      </div>
-    </section>
   );
 }
