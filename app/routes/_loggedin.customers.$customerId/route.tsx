@@ -20,7 +20,7 @@ export default function Page() {
       label: "プロフィール",
       end: true,
     },
-    { to: `/customers/${customerId}/negotiations`, label: "商談", end: true },
+    { to: `/customers/${customerId}/deals`, label: "取引", end: true },
   ];
   const title = (
     <>
