@@ -24,7 +24,7 @@ export class CustomerNewPage {
     protected page: Page,
     { submitLabel }: { submitLabel: string } = { submitLabel: "登録する" },
   ) {
-    this.nameLocator = page.getByRole("textbox", { name: "名前（任意）" });
+    this.nameLocator = page.getByRole("textbox", { name: "名前（必須）" });
     this.nameKanaLocator = page.getByRole("textbox", {
       name: "名前（かな）（任意）",
     });
@@ -66,20 +66,19 @@ export class CustomerNewPage {
     postCode,
     address,
     note,
-  }: Partial<{
-    name?: string;
-    nameKana?: string;
-    sex?: SexLabel;
-    birthday?: string;
-    email?: string;
-    phone?: string;
-    mobilePhone?: string;
-    url?: string;
-    postCode?: string;
-    address?: string;
-    note?: string;
-  }> = {}) {
-    if (name !== undefined) {
+  }: { name: string } & Partial<{
+    nameKana: string;
+    sex: SexLabel;
+    birthday: string;
+    email: string;
+    phone: string;
+    mobilePhone: string;
+    url: string;
+    postCode: string;
+    address: string;
+    note: string;
+  }>) {
+    if (name) {
       await this.nameLocator.fill(name);
     }
     if (nameKana !== undefined) {

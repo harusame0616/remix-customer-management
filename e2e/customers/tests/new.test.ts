@@ -26,12 +26,11 @@ const test = base.extend<{ customerNewPage: CustomerNewPage }>({
 });
 
 test.describe("登録できる", () => {
-  test("未入力で登録できる", async ({ customerNewPage }) => {
-    const customerDetailPage = await customerNewPage.register();
+  test("必須入力のみで登録できる", async ({ customerNewPage }) => {
+    const name = generateUniqueStr(CUSTOMER_NAME_MAX_LENGTH);
+    const customerDetailPage = await customerNewPage.register({ name });
 
-    await expect(customerDetailPage.nameLocator).toHaveText(
-      CustomerDetailPage.NO_INPUT_TEXT,
-    );
+    await expect(customerDetailPage.nameLocator).toHaveText(name);
     await expect(customerDetailPage.nameKanaLocator).toHaveText(
       CustomerDetailPage.NO_INPUT_TEXT,
     );
