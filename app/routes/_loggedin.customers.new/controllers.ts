@@ -58,3 +58,5 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
 }
+
+export type Action = typeof action;

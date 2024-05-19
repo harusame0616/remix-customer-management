@@ -40,6 +40,7 @@ import {
   FormRadio,
   FormTextarea,
 } from "../../components/form-input";
+import { Action } from "./controllers";
 export { action } from "./controllers";
 
 export const meta: MetaFunction = () => {
@@ -69,7 +70,7 @@ const customerFormSchema = z.object({
 type CustomerSchema = typeof customerFormSchema;
 export default function CustomerNew() {
   const submit = useSubmit();
-  const actionData = useActionData<typeof action>();
+  const actionData = useActionData<Action>();
   const alertRef = React.useRef<ComponentRef<typeof Alert>>(null);
 
   useEffect(() => {
