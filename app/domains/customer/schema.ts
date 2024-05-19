@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { Sex } from "./models/customer";
+import { CustomerName } from "./models/customer-name";
 
-export const NAME_MAX_LENGTH = 24;
 export function nameSchema() {
-  return z.string().max(NAME_MAX_LENGTH);
+  return z.string().max(CustomerName.MAX_LENGTH).min(CustomerName.MIN_LENGTH);
 }
 
 export const NAME_KANA_MAX_LENGTH = 48;

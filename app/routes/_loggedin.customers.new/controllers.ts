@@ -32,9 +32,7 @@ const createCustomerSchema = z.object({
   email: z.union([emailSchema(), z.literal("")]),
   note: noteSchema(),
 });
-export async function createCustomerController({
-  request,
-}: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const parsedParams = createCustomerSchema.safeParse(await request.json());
 
   if (!parsedParams.success) {

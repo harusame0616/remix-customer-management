@@ -6,10 +6,12 @@ import React, { ComponentRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { ActionCard } from "~/components/action-card";
+import { PageLayout } from "~/components/page-layout";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Form } from "~/components/ui/form";
 import { Separator } from "~/components/ui/separator";
 import { Sex } from "~/domains/customer/models/customer";
+import { CustomerName } from "~/domains/customer/models/customer-name";
 import {
   ADDRESS_MAX_LENGTH,
   addressSchema,
@@ -20,7 +22,6 @@ import {
   MOBILE_PHONE_MIN_LENGTH,
   mobilePhoneSchema,
   NAME_KANA_MAX_LENGTH,
-  NAME_MAX_LENGTH,
   nameKanaSchema,
   nameSchema,
   NOTE_MAX_LENGTH,
@@ -39,10 +40,7 @@ import {
   FormRadio,
   FormTextarea,
 } from "../../components/form-input";
-import { createCustomerController } from "./controllers";
-import { PageLayout } from "~/components/page-layout";
-
-export const action = createCustomerController;
+export { action } from "./controllers";
 
 export const meta: MetaFunction = () => {
   return [{ title: "顧客の新規登録 - 顧客管理システム" }];
@@ -133,11 +131,12 @@ export default function CustomerNew() {
             >
               <FormInput
                 control={form.control}
-                description={`${NAME_MAX_LENGTH}文字以内`}
+                description={`${CustomerName.MIN_LENGTH}文字以上、${CustomerName.MAX_LENGTH}文字以内`}
                 label="名前"
                 name="name"
                 autoComplete="off"
                 className="max-w-28"
+                required
               />
               <FormInput
                 control={form.control}

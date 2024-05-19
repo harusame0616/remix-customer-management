@@ -1,4 +1,5 @@
 import { generateId } from "~/libs/id";
+import { CustomerName } from "./customer-name";
 
 export const Sex = {
   Man: "man",
@@ -9,9 +10,9 @@ export const Sex = {
 
 export type Sex = (typeof Sex)[keyof typeof Sex];
 
-export type CustomerDto = {
+type CustomerProperty = {
   customerId: string;
-  name: string;
+  name: CustomerName;
   nameKana: string;
   sex: Sex;
   birthday: string | null;
@@ -25,30 +26,34 @@ export type CustomerDto = {
   registeredAt: string;
 };
 
+export type CustomerDto = Omit<CustomerProperty, "name"> & { name: string };
+
 export type CustomerCreateParams = Omit<
-  CustomerDto,
-  "customerId" | "registeredAt"
->;
+  CustomerProperty,
+  "customerId" | "registeredAt" | "name"
+> & { name: string };
 
 export class Customer {
-  dto: CustomerDto;
-
-  protected constructor(dto: CustomerDto) {
-    this.dto = dto;
-  }
+  protected constructor(private property: CustomerProperty) {}
 
   static create(params: CustomerCreateParams) {
     return new Customer({
       ...params,
+      name: CustomerName.create(params.name),
       registeredAt: new Date().toISOString(),
       customerId: generateId(),
     });
   }
-  fromDto(dto: CustomerDto) {
-    this.dto = { ...dto };
+  static fromDto(dto: CustomerDto) {
+    return new Customer({
+      ...dto,
+      name: CustomerName.fromDto(dto),
+    });
   }
-
-  toDto() {
-    return { ...this.dto };
+  toDto(): CustomerDto {
+    return {
+      ...this.property,
+      name: this.property.name.value,
+    };
   }
 }
