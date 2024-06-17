@@ -41,6 +41,9 @@ export class Customer {
       ...params,
       name: CustomerName.create(params.name),
       registeredAt: new Date().toISOString(),
+      birthday: params.birthday
+        ? new Date(params.birthday).toISOString()
+        : null,
       customerId: generateId(),
     });
   }
