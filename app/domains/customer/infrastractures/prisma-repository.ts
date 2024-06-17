@@ -1,7 +1,7 @@
 import { Sex as PrismaSex } from "@prisma/client";
+import prisma from "~/lib/prisma";
 import { Customer, Sex } from "../models/customer";
 import { CustomerRepository } from "../usecases/repository";
-import prisma from "~/lib/prisma";
 
 export function toPrismaSex(sex: Sex): PrismaSex {
   const prismaSexMap = {
@@ -20,6 +20,20 @@ export class PrismaCustomerRepository implements CustomerRepository {
         customerId,
       },
     });
+  }
+  async deleteAll(): Promise<void> {
+    await prisma.customer.deleteMany();
+  }
+
+  async manyInsert(customers: Customer[]) {
+    const customersDto = customers
+      .map((customer) => customer.toDto())
+      .map((customerDto) => ({
+        ...customerDto,
+        sex: toPrismaSex(customerDto.sex),
+      }));
+
+    await prisma.customer.createMany({ data: customersDto });
   }
 
   async save(customer: Customer) {

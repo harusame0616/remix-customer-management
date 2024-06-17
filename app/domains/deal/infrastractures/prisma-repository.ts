@@ -52,6 +52,13 @@ export class PrismaDealRepository implements DealRepository {
       },
     });
   }
+
+  async manyInsert(deals: Deal[]): Promise<void> {
+    await prisma.deal.createMany({
+      data: deals.map((deal) => deal.toDto()),
+    });
+  }
+
   async findByCustomerId(customerId: string): Promise<Deal[]> {
     const prismaDeals = await prisma.deal.findMany({
       where: {
@@ -82,5 +89,9 @@ export class PrismaDealRepository implements DealRepository {
         dealId,
       },
     });
+  }
+
+  async deleteAll(): Promise<void> {
+    await prisma.deal.deleteMany();
   }
 }
