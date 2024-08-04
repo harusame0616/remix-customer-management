@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm run prebuild:$VERCEL_ENV && pnpm run build"
+  "buildCommand": "pnpm run prebuild:$VERCEL_ENV && pnpm run build",
+  "crons": [
+    {
+      "path": "/batch/db/reset",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }
